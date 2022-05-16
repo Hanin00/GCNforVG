@@ -14,11 +14,11 @@ except ImportError:
     #from io import StringIO #..
     from io import BytesIO as ReadBytes
 
-image_id1 = 53
-image_id2 = 54
-image_id3 = 62
-image_id4 = 116
-image_id5 = 190
+image_id1 = 27
+image_id2 = 43
+image_id3 = 75
+image_id4 = 119
+image_id5 = 146
 image1 = vg.get_image_data(id=image_id1)
 image2 = vg.get_image_data(id=image_id2)
 image3 = vg.get_image_data(id=image_id3)
