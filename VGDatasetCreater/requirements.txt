@@ -1,0 +1,9 @@
+numpy
+pandas
+openpyxl
+gensim
+tqdm
+networkx
+matplotlib
+torch
+torch_geometric
