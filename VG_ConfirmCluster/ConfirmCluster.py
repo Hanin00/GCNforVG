@@ -10,6 +10,8 @@ import requests
 from collections import Counter
 from typing import List
 
+
+
 testFile = open('data/cluster10000.txt', 'r')  # 'r' read의 약자, 'rb' read binary 약자 (그림같은 이미지 파일 읽을때)
 readFile = testFile.readline()
 freObjList = (readFile.replace("'", '')).split(',')
