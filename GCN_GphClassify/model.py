@@ -16,6 +16,10 @@ import torch.nn.functional as F
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
 
 # GCN Layer
+
+
+
+
 class GraphConvolution(Module):
     def __init__(self, in_features, out_features, bias=True):
         super(GraphConvolution, self).__init__()

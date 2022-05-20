@@ -2,3 +2,6 @@ networkx
 matplotlib
 torch
 scipy
+dgl
+sklearn
+tqdm
