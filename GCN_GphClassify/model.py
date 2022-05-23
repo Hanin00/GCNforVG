@@ -18,6 +18,9 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cp
 # GCN Layer
 
 
+#weight 사이즈 어케 들어가는지 다시 확인(유동적으로 변경 되는지. 근데 이거 모델 하나에 되는건데.. 어케 해야 하는거지..?
+#neuralenet에서 어케 flatten 해서 들어가는지, featureM x weight 할 때 어케 사이즈 지정해주는지 확인
+
 
 
 class GraphConvolution(Module):

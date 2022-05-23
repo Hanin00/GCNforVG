@@ -5,3 +5,7 @@ scipy
 dgl
 sklearn
 tqdm
+gensim
+tqdm
+pandas
+numpy

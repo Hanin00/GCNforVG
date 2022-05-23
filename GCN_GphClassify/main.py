@@ -17,30 +17,26 @@ from tqdm import tqdm
 import sys
 
 
-# with open("./data/featMatrix1000.pickle", "wb") as fw:
-#     pickle.dump(featM, fw)
 with open("./data/adjMatrix1000.pickle", "rb") as fr:
     data1 = pickle.load(fr)
 
 with open("./data/featMatrix1000.pickle", "rb") as fr:
     data2 = pickle.load(fr)
 
+testFile = open('./data/cluster.txt', 'r')
+readFile = testFile.readline()
+label = (readFile[1:-1].replace("'", '')).split(',')
+
+
+label = label[:1000]
 adjMs = data1[:1000]
 featMs = data2[:1000]
-
-
-print(len(adjMs))
-print(len(featMs))
-
-sys.exit()
-
 
 # gpu 사용
 USE_CUDA = torch.cuda.is_available() # GPU를 사용가능하면 True, 아니라면 False를 리턴
 device = torch.device("cuda" if USE_CUDA else "cpu") # GPU 사용 가능하면 사용하고 아니면 CPU 사용
 print("다음 기기로 학습합니다:", device)
 
-sys.exit()
 
 random.seed(777)
 torch.manual_seed(777)
@@ -48,11 +44,10 @@ if device == 'cuda':
     torch.cuda.manual_seed_all(777)
 
 
-
-# todo
+# todo input-output / flatten(weight) / 일단 10개만 학습해보기
 #dataset = GraphDataset(Images, labels)
 
-dataloader = DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=False)
+#dataloader = DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=False)
 
 num_examples = len(dataset)
 num_train = int(num_examples * 0.8)
@@ -85,10 +80,6 @@ for epoch in range(20):
         batched_graph = batched_graph.squeeze().to(device)
 
         pred = model(n_features, n_labels, batched_graph).to(device)  # Tensor(1,100,100), features = Tensor(100,10)
-
-        # print(batched_graph)
-        # print(features)
-        # print(pred[0])
 
         # loss = F.nll_loss(pred[0], attr.squeeze().long()).to(device)
         loss = F.nll_loss(pred[0], attr.squeeze().long()).to(device)
