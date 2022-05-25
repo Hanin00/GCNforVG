@@ -63,10 +63,14 @@ G3.add_edges_from([(7, 8, {"color": "white"}), (8, 9, {"color": "green"})])
 print(nx.graph_edit_distance(G1, G2))
 print(nx.graph_edit_distance(G2, G3))
 
-print(nx.nodes(G2))
-print(nx.nodes(G3))
+#print(nx.nodes(G2))
+#print(nx.nodes(G3))
 print(nx.edges(G2))
-print(nx.edges(G3))
+#print(nx.edges(G3))
+print(G3.edges())
+
+
+
 print(nx.graph_edit_distance(G2,G3,edge_match=(G2[0][1], G3[2][2]),edge_subst_cost=1))
 
 #nx.draw(G1,with_labels=True)
