@@ -7,7 +7,7 @@ import torch.nn.functional as F
 import scipy
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from dataset import GraphDataset
+from analysisDataset import GraphDataset
 from torch.nn.parameter import Parameter
 from torch.utils.data import Dataset, DataLoader
 import model as md
@@ -52,7 +52,7 @@ dataloader = DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=
 
 num_examples = len(dataset)
 num_train = int(num_examples * 0.7)
-/
+
 train_sampler = SubsetRandomSampler(torch.arange(num_train).to(device))
 test_sampler = SubsetRandomSampler(torch.arange(num_train, num_examples).to(device))
 

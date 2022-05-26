@@ -1,6 +1,11 @@
 import json
 import pickle
-
+import time
+import networkx as nx
+import numpy as np
+import sys
+import pandas as pd
+from tqdm import tqdm
 
 # scene_graph.json -> adjMatrix/FeatureMatrix 만들 때 오류나서 제외한 사진들이 있음
 # 해당 이미지를 제외하고 label 값을 추출해야해서 따로 처리함
@@ -25,23 +30,13 @@ def siftCluster():
     with open("./data/clusterSifted1000.pickle", "wb") as fw:
         pickle.dump(label, fw)
 
-
-# siftCluster()
-
-
-# netx에서 adjMatrix sparse 형태로 뽑아서 edge list로 사용하기
-def tupleToList():
-    return
-
-
 ''''
     data
     data.y : cluster 값, list 형태로
     data.y[mask] : cluster label 이라는데 일단 data.y[mask] = data.y?
     data.val_mask : random seed 정해서 비율 idx 범위정하기?
     data.train_mask :
-    data.test_mask : 
-    
+    data.test_mask :    
     
     data.x : feature matrix
     data.edge_list : sparse adjacency list
@@ -56,12 +51,6 @@ def tupleToList():
     data.test_neg_edge_index / test_pos_edge_index    
     data.train_neg_edge_index / train_pos_edge_index    
 '''
-import time
-import networkx as nx
-import numpy as np
-import sys
-import pandas as pd
-from tqdm import tqdm
 
 def mkEdgelistPer1(netx):
     a = netx.edges.data()
@@ -85,21 +74,22 @@ def mkEdgelistPerRange(netx, num):
         n2.append(sr['n2'].values.tolist())
     return n1, n2
 
-
-with open("./data/networkx1000.pickle", "rb") as fr:
-    netx = pickle.load(fr)
-
-
-n1, n2 = mkEdgelistPerRange(netx, 1000)
-edgeList = [n1, n2]
-
-with open('./data/edgeList1000.pickle', 'wb') as f:
-    pickle.dump(edgeList[:1001], f)
-
-with open("./data/edgeList1000.pickle", "rb") as fr:
-    edgeList = pickle.load(fr)
-
-print(len(edgeList))
-print(edgeList[0])
-print(len(edgeList[0][0]))
-print(len(edgeList[0][1]))
+'''
+    edgeList local 저장 및 확인
+'''
+# with open("./data/networkx1000.pickle", "rb") as fr:
+#     netx = pickle.load(fr)
+#
+# n1, n2 = mkEdgelistPerRange(netx, 1000)
+# edgeList = [n1, n2]
+#
+# with open('./data/edgeList1000.pickle', 'wb') as f:
+#     pickle.dump(edgeList[:1001], f)
+#
+# with open("./data/edgeList1000.pickle", "rb") as fr:
+#     edgeList = pickle.load(fr)
+#
+# print(len(edgeList))
+# print(edgeList[0])
+# print(len(edgeList[0][0]))
+# print(len(edgeList[0][1]))

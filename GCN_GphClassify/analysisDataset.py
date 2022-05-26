@@ -26,63 +26,29 @@ from tensorboardX import SummaryWriter
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
-from deepsnap.batch import Batch
+import sys
+
+dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
+data = dataset.data
+batch = dataset.data.batch
+
+print(data)
+print(type(data))
+print(batch)
+
+
+sys.exit()
 
 
 
 
 
-class CustomConv(pyg_nn.MessagePassing):
-    def __init__(self, in_channels, out_channels):
-        super(CustomConv, self).__init__(aggr='add')  # "Add" aggregation. # mean, max 등등
-        self.lin = nn.Linear(in_channels, out_channels)
-        self.lin_self = nn.Linear(in_channels, out_channels)  # convolution
 
-    def forward(self, x, edge_index):
-        """
-        Convolution을 위해서는 2가지가 필수적임.
-        x has shape [N, in_channels] # feature matrix
-        edge_index has shape [2, E] ==> connectivity ==> 2: (u, v)
 
-        """
 
-        # Add self-loops to the adjacency matrix.
-        # A -> \tilde{A}
-        # pyg_utils.add_self_loops(edge_index, num_nodes = x.size(0))
-        # neighbor 정보뿐만 아니라, 내 정보까지 add해야하므로 self-loops 추가!
 
-        # 지울수도 있다 !
-        edge_index, _ = pyg_utils.remove_self_loops(edge_index)
 
-        # Transform node feature matrix.
-        self_x = self.lin_self(x)  # B
-        x = self.lin(x)  # W
 
-        # self_x: skip connection #compute message for all the nodes
-        return self_x + self.propagate(edge_index,
-                                       size=(x.size(0), x.size(0)), x=x)
-
-    def build_conv_model(self, input_dim, hidden_dim):
-        # refer to pytorch geometric nn module for different implementation of GNNs.
-        if self.task == 'node':  # node classification
-            return CustomConv(input_dim, hidden_dim)
-
-    def message(self, x_i, x_j, edge_index, size):
-        # Compute messages
-        # x_i is self-embedding
-        # x_j has shape [E, out_channels]
-
-        row, col = edge_index
-        deg = pyg_utils.degree(row, size[0], dtype=x_j.dtype)
-        deg_inv_sqrt = deg.pow(-0.5)
-        norm = deg_inv_sqrt[row] * deg_inv_sqrt[col]
-
-        return x_j
-
-    def update(self, aggr_out):
-        # aggr_out has shape [N, out_channels]
-        F.normalize(aggr_out, p=2, dim=-1)  # dim: 상황에 따라 알맞게 조정할
-        return aggr_out
 
 
 # 이미 layer가 구현되어 있으므로, stacking만 하면 된다.
@@ -125,6 +91,7 @@ class GNNStack(nn.Module):
         batch: batch마다 node의 개수가 다름. => 매우 복잡
 
         """
+
         x, edge_index, batch = data.x, data.edge_index, data.batch
         if data.num_node_features == 0:  # no features # feature가 없는 경우
             x = torch.ones(data.num_nodes, 1)
@@ -149,6 +116,59 @@ class GNNStack(nn.Module):
 
     def loss(self, pred, label):
         return F.nll_loss(pred, label)  # nn.CrossEntropyLoss는 nn.LogSoftmax()와 nn.NLLLoss() # label: one-hot
+
+
+class CustomConv(pyg_nn.MessagePassing):
+    def __init__(self, in_channels, out_channels):
+        super(CustomConv, self).__init__(aggr='add')  # "Add" aggregation. # mean, max 등등
+        self.lin = nn.Linear(in_channels, out_channels)
+        self.lin_self = nn.Linear(in_channels, out_channels)  # convolution
+
+    def forward(self, x, edge_index):
+        """
+        Convolution을 위해서는 2가지가 필수적임.
+        x has shape [N, in_channels] # feature matrix
+        edge_index has shape [2, E] ==> connectivity ==> 2: (u, v)
+
+        """
+
+        # Add self-loops to the adjacency matrix.
+        # A -> \tilde{A}
+        # pyg_utils.add_self_loops(edge_index, num_nodes = x.size(0))
+        # neighbor 정보뿐만 아니라, 내 정보까지 add해야하므로 self-loops 추가!
+
+        # 지울수도 있다 !
+        edge_index, _ = pyg_utils.remove_self_loops(edge_index)
+
+        # Transform node feature matrix.
+        self_x = self.lin_self(x)  # B
+        x = self.lin(x)  # W
+
+        # self_x: skip connection #compute message for all the nodes
+        return self_x + self.propagate(edge_index,
+                                       size=(x.size(0), x.size(0)), x=x)
+
+    def message(self, x_i, x_j, edge_index, size):
+        # Compute messages
+        # x_i is self-embedding
+        # x_j has shape [E, out_channels]
+
+        row, col = edge_index
+        deg = pyg_utils.degree(row, size[0], dtype=x_j.dtype)
+        deg_inv_sqrt = deg.pow(-0.5)
+        norm = deg_inv_sqrt[row] * deg_inv_sqrt[col]
+
+        return x_j
+
+    def update(self, aggr_out):
+        # aggr_out has shape [N, out_channels]
+        F.normalize(aggr_out, p=2, dim=-1)  # dim: 상황에 따라 알맞게 조정할
+        return aggr_out
+
+    def build_conv_model(self, input_dim, hidden_dim):
+        # refer to pytorch geometric nn module for different implementation of GNNs.
+        if self.task == 'node':  # node classification
+            return CustomConv(input_dim, hidden_dim)
 
 
 def train(dataset, task, writer):
@@ -216,8 +236,6 @@ def test(loader, model, is_validation=False):
         for data in loader.dataset:
             total += torch.sum(data.test_mask).item()
     return correct / total
-
-
 
 writer = SummaryWriter("./log/" + datetime.now().strftime("%Y%m%d-%H%M%S"))
 
