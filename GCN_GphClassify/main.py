@@ -7,15 +7,14 @@ import torch.nn.functional as F
 import scipy
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-#from datasetTest import GraphDataset
+from dataset import GraphDataset
 from torch.nn.parameter import Parameter
 from torch.utils.data import Dataset, DataLoader
 import model as md
 import random
 from tqdm import tqdm
-
+import numpy as np
 import sys
-
 
 with open("./data/adjMatrix1000.pickle", "rb") as fr:
     data1 = pickle.load(fr)
@@ -23,14 +22,17 @@ with open("./data/adjMatrix1000.pickle", "rb") as fr:
 with open("./data/featMatrix1000.pickle", "rb") as fr:
     data2 = pickle.load(fr)
 
-testFile = open('./data/cluster.txt', 'r')
-readFile = testFile.readline()
-label = (readFile[1:-1].replace("'", '')).split(',')
+with open("./data/clusterSifted1000.pickle", "rb") as fr:
+    data3 = pickle.load(fr)
 
-
-label = label[:1000]
 adjMs = data1[:1000]
 featMs = data2[:1000]
+labels = data3[:1000]
+
+labels = torch.LongTensor(labels)
+
+#print(adjMs[0])
+#print(adjMs[0].todense()) #<class 'numpy.matrix'>
 
 # gpu 사용
 USE_CUDA = torch.cuda.is_available() # GPU를 사용가능하면 True, 아니라면 False를 리턴
@@ -45,13 +47,12 @@ if device == 'cuda':
 
 
 # todo input-output / flatten(weight) / 일단 10개만 학습해보기
-#dataset = GraphDataset(Images, labels)
-
-#dataloader = DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=False)
+dataset = GraphDataset(adjMs, labels)
+dataloader = DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=False)
 
 num_examples = len(dataset)
-num_train = int(num_examples * 0.8)
-
+num_train = int(num_examples * 0.7)
+/
 train_sampler = SubsetRandomSampler(torch.arange(num_train).to(device))
 test_sampler = SubsetRandomSampler(torch.arange(num_train, num_examples).to(device))
 
@@ -60,11 +61,8 @@ train_dataloader = GraphDataLoader(
 test_dataloader = GraphDataLoader(
     dataset, sampler=test_sampler, batch_size=1, drop_last=False)
 
-it = iter(train_dataloader)
-batch = next(it)
-
-n_labels = 15  # 15
-n_features = features.shape[1]  # 10  #features = Tensor(100,10)
+# it = iter(train_dataloader)
+# batch = next(it)
 
 model = md.GCN  # n_features = 100, n_labels = 15
 model.to(device)
@@ -72,13 +70,23 @@ model.to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-10)
 # labels, features, model = labels.to(device), features.to(device), model.to(device)
 
+
 for epoch in range(20):
+    '''
+    1-1. to dense 해서 일일히 넣어줌
+    1-2 . GCN 모델에서 flatten
+    
+    2. 전체 셋을 넣고, GCN 모델에서 하나씩 까서 넣어줌. 
+        -> 이게 모델 취지에 더 맞는 형태 같긴 한데..
+    '''
     # batched_graph : 1,100,100, labels :    attr : 1,15
     for batched_graph, labels, attr in train_dataloader:
         model.train()
         batched_graph, labels, attr = batched_graph.to(device), labels.to(device), attr.to(device)
         batched_graph = batched_graph.squeeze().to(device)
 
+        n_labels = 10  # 10
+        n_features = features.shape[1]  # 10  #features = Tensor(100,10)
         pred = model(n_features, n_labels, batched_graph).to(device)  # Tensor(1,100,100), features = Tensor(100,10)
 
         # loss = F.nll_loss(pred[0], attr.squeeze().long()).to(device)

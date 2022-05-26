@@ -9,3 +9,8 @@ gensim
 tqdm
 pandas
 numpy
+
+
+
+
+torch_geometric

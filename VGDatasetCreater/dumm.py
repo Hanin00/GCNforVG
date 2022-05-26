@@ -10,13 +10,17 @@ import pickle
 from gensim.models import FastText
 from tqdm import tqdm
 
+
+
+
+'''
 objectNames = ['string','string2']
 
 objectNames += ['road', 'taxi', 'door', 'taxi', 'wagon', 'man', 'stairs', 'suit', 'street', 'van', 'sign', 'car',
                 'symbol', 'car', 'trafficcone', 'ground', 'tag', 'lights', 'woman', 'cars', 'people', 'car', 'people',
                 'steps', ]
 
-print(objectNames)
+print(objectNames)'''
 
 # gList = []
 # imgCnt = 3
