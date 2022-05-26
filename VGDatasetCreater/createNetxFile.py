@@ -67,19 +67,51 @@ import pickle
 # print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
 #
 # for i in tqdm(range(imgCnt)):
-#     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(i,data)
+#     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
 #     df_edge = pd.DataFrame({"objId": objId, "subjId": subjId,})
 #     gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
 #     gList.append(gI)
 #
-# with open("./data/neworkx1000.pickle", "wb") as fw:
+# with open("./data/networkx1000.pickle", "wb") as fw:
 #     pickle.dump(gList, fw)
 
-# with open("./data/neworkx1000.pickle", "rb") as fr:
+# with open("./data/networkx1000.pickle", "rb") as fr:
 #     data = pickle.load(fr)
 
 # G = data[1]
 # print(G.nodes.data())
+
+'''
+    networkX 생성 -> featureMatrix를 fasttext로 만드는데 objname이 너무 적어서인지 오류나던 이미지 제외하고 생성
+'''
+gList = []
+imgCnt = 1200
+start = time.time()
+with open('./data/scene_graphs.json') as file:  # open json file
+    data = json.load(file)
+end = time.time()
+print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
+
+igList = [50,60,156,241,284,299,317,371,43,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+
+for i in tqdm(range(imgCnt)):
+    if i in igList :
+        continue
+    else :
+        objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
+        df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
+        gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+        gList.append(gI)
+
+with open("./data/networkx1000.pickle", "wb") as fw:
+    pickle.dump(gList[:1000], fw)
+
+with open("./data/networkx1000.pickle", "rb") as fr:
+    data = pickle.load(fr)
+
+print(len(data))
+
+
 
 
 ''' NetworkX 객체에서 Adj 추출하기 - nodeList option으로 줘서 순서에 맞게!!'''
@@ -95,42 +127,42 @@ import pickle
 
 
 ''' Feature Matrix local 저장 및 Adj local 저장'''
-with open('./data/scene_graphs.json') as file:  # open json file
-    data1 = json.load(file)
-    # objId, objName 불러옴
-errorId = [] # todo relationship에서 Id를 얻어오지 못하는 것을 확인함 -> 해당 Id 기록해서 체크해보기
-
-featMList = []
-adjMList = []
-imgCnt = 1300
-for imgId in tqdm(range(50, imgCnt)):
-    objectIds, objectNames = ut.AllNodes(data1, imgId)
-    # objectId는 중복 X, ordered는 아님
-
-    objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data1, imgId)
-    objIdList = []
-    objIdList += objId
-    objIdList += subjId
-    objIdList = list(set(objIdList))
-
-    objDict = {name: value for name, value in zip(objectIds, objectNames)}
-    embDict = ut.FeatEmbeddPerImg(objectNames)
-    featM = ut.FeatureMatrix(objIdList, objDict, embDict)
-    featMList.append((featM))
-
-    df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
-    if(len(df_edge) == 0) :
-        errorId.append(imgId)
-        continue
-    else :
-        G = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
-        A = nx.adjacency_matrix(G, objIdList)  #
-        # A1 = A.todense()
-        adjMList.append(A)
-
-print(errorId)
-
-with open("./data/featMatrix1000.pickle", "wb") as fw:
-    pickle.dump(featMList, fw)
-with open("./data/adjMatrix1000.pickle", "wb") as fw:
-    pickle.dump(adjMList, fw)
+# with open('./data/scene_graphs.json') as file:  # open json file
+#     data1 = json.load(file)
+#     # objId, objName 불러옴
+# errorId = [] # todo relationship에서 Id를 얻어오지 못하는 것을 확인함 -> 해당 Id 기록해서 체크해보기
+#
+# featMList = []
+# adjMList = []
+# imgCnt = 1300
+# for imgId in tqdm(range(50, imgCnt)):
+#     objectIds, objectNames = ut.AllNodes(data1, imgId)
+#     # objectId는 중복 X, ordered는 아님
+#
+#     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data1, imgId)
+#     objIdList = []
+#     objIdList += objId
+#     objIdList += subjId
+#     objIdList = list(set(objIdList))
+#
+#     objDict = {name: value for name, value in zip(objectIds, objectNames)}
+#     embDict = ut.FeatEmbeddPerImg(objectNames)
+#     featM = ut.FeatureMatrix(objIdList, objDict, embDict)
+#     featMList.append((featM))
+#
+#     df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
+#     if(len(df_edge) == 0) :
+#         errorId.append(imgId)
+#         continue
+#     else :
+#         G = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+#         A = nx.adjacency_matrix(G, objIdList)  #
+#         # A1 = A.todense()
+#         adjMList.append(A)
+#
+# print(errorId)
+#
+# with open("./data/featMatrix1000.pickle", "wb") as fw:
+#     pickle.dump(featMList, fw)
+# with open("./data/adjMatrix1000.pickle", "wb") as fw:
+#     pickle.dump(adjMList, fw)
