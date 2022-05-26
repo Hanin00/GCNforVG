@@ -61,37 +61,7 @@ import networkx as nx
 import numpy as np
 import sys
 import pandas as pd
-
-
-gList = []
-imgCnt = 1200
-start = time.time()
-with open('./data/scene_graphs.json') as file:  # open json file
-    data = json.load(file)
-end = time.time()
-print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
-
-igList = [50,60,156,241,284,299,317,371,43,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
-
-for i in tqdm(range(imgCnt)):
-    if i in igList :
-        continue
-    else :
-        objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(i, data)
-        df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
-        gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
-        gList.append(gI)
-
-with open("./data/networkx1000.pickle", "wb") as fw:
-    pickle.dump(gList[:1001], fw)
-
-with open("./data/networkx1000.pickle", "rb") as fr:
-    data = pickle.load(fr)
-
-print(len(data))
-
-sys.exit()
-
+from tqdm import tqdm
 
 def mkEdgelistPer1(netx):
     a = netx.edges.data()
@@ -100,36 +70,24 @@ def mkEdgelistPer1(netx):
     n1 = sr['n1'].values.tolist()
     n2 = sr['n2'].values.tolist()
     return n1, n2
-
-
-n1, n2 = mkEdgelistPer1(netx[0])  # local 저장?
-print(n1, n2)
-
-
-def mkEdgelistPer1(netx):
-    a = netx.edges.data()
-    sr = pd.DataFrame(a)
-    sr.columns = ['n1', 'n2', 'feature']
-    n1 = sr['n1'].values.tolist()
-    n2 = sr['n2'].values.tolist()
-    return n1, n2
-
 
 # 일단 local로 가지고 있으면서 모델 돌리기
-
-
 def mkEdgelistPerRange(netx, num):
     n1 = []
     n2 = []
-    for idx in range(num):
+    for idx in tqdm(range(num)):
         a = netx[idx].edges.data()
         sr = pd.DataFrame(a)
+
         sr.columns = ['n1', 'n2', 'feature']
+        #sr.columns = ['n1', 'n2']
         n1.append(sr['n1'].values.tolist())
         n2.append(sr['n2'].values.tolist())
     return n1, n2
 
 
+with open("./data/networkx1000.pickle", "rb") as fr:
+    netx = pickle.load(fr)
 
 
 n1, n2 = mkEdgelistPerRange(netx, 1000)
@@ -138,7 +96,10 @@ edgeList = [n1, n2]
 with open('./data/edgeList1000.pickle', 'wb') as f:
     pickle.dump(edgeList[:1001], f)
 
-
 with open("./data/edgeList1000.pickle", "rb") as fr:
-    data3 = pickle.load(fr)
+    edgeList = pickle.load(fr)
 
+print(len(edgeList))
+print(edgeList[0])
+print(len(edgeList[0][0]))
+print(len(edgeList[0][1]))
