@@ -274,51 +274,53 @@ import pickle
         ->num_nodes는 G.number_of_nodes()
 '''
 import csv
-#graph_edges.csv ---------------------행열 전환 전 <- zip 안 쓴 이유 : src가 list라 오류나서
-with open("./data/edgeList1000.pickle", "rb") as fr:
-    edgeList = pickle.load(fr)
 
-graphId = range(1000)
-srcList = edgeList[0]
-dstList = edgeList[1]
-
-with open('./data/graph_edges.csv', 'w', newline='') as f:
-    writer = csv.writer(f)
-
-    for graph_id in graphId:
-        for j in range(len(srcList[graph_id])):
-            src = srcList[graph_id][j]
-            dst = dstList[graph_id][j]
-            writer.writerow([graph_id, src, dst])
-            writer.writerow([graph_id, dst, src])
-    writer.writerow(graphId)
+# #graph_edges.csv ---------------------행열 전환 전 <- zip 안 쓴 이유 : src가 list라 오류나서
+# #
+# with open("./data/edgeList1000.pickle", "rb") as fr:
+#     edgeList = pickle.load(fr)
+#
+# graphId = range(1000)
+# srcList = edgeList[0]
+# dstList = edgeList[1]
+#
+# with open('../GCN_GphClassify/data/graph_edges.csv', 'w', newline='') as f:
+#     writer = csv.writer(f)
+#     writer.writerow(['graphId', 'src','dst'])
+#     for graph_id in graphId:
+#         for j in range(len(srcList[graph_id])):
+#             src = srcList[graph_id][j]
+#             dst = dstList[graph_id][j]
+#             writer.writerow([graph_id, src, dst])
+#             writer.writerow([graph_id, dst, src])
+#     writer.writerow(graphId)
 
 
 #graph_properties.csv -------------------------------
-# with open("./data/clusterSifted1000.pickle", "rb") as fr:
-#     labels = pickle.load(fr)
-# with open("./data/networkx1000.pickle", "rb") as fr:
-#    networkx = pickle.load(fr)
-#
-#
-# graphId = range(1000)
-#
-# num_nodes = []
-# for G in networkx :
-#     num_nodes.append(G.number_of_nodes())
-#
-# with open('./data/graph_properties.csv', 'w', newline='') as f:
-#     writer = csv.writer(f)
-#     writer.writerow(graphId)
-#     writer.writerow(labels)
-#     writer.writerow(num_nodes)
+with open("./data/clusterSifted1000.pickle", "rb") as fr:
+    labels = pickle.load(fr)
+with open("./data/networkx1000.pickle", "rb") as fr:
+   networkx = pickle.load(fr)
+
+
+graphId = range(1000)
+
+num_nodes = []
+for G in networkx :
+    num_nodes.append(G.number_of_nodes())
+
+with open('./data/graph_properties.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(graphId)
+    writer.writerow(labels)
+    writer.writerow(num_nodes)
 
 # -------------------------------행열 전환 후 저장
-# import pandas as pd
-# import numpy as np
-# df=pd.read_csv("./data/graph_properties.csv", encoding='cp949')
-#
-# df=df.transpose()
-# print(df.head())
-# df.to_csv("./data/graph_properties.csv")
+import pandas as pd
+import numpy as np
+df=pd.read_csv("./data/graph_properties.csv", encoding='cp949')
+df=df.transpose()
+df.to_csv("./data/graph_properties.csv")
+print(df.head())
+
 # -----------------------------------------------------
