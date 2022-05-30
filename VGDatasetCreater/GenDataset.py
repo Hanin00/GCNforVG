@@ -62,21 +62,17 @@ with open("./data/edgeListTensor.pickle", "wb") as fw:
 with open("./data/edgeListTensor.pickle", "rb") as fr:
     data = pickle.load(fr)
 
-print(len(data))
-print(type(data))
-print(data.shape)
+
+
+
+
 
 #edge_idx 이케 만들어야해~_~
-
-
 
 
 # print(len(x[1]))
 # print(len(x[1][0]))
 # print(edgeIdx)
-
-
-sys.exit()
 
 #datset(Graph에 들어가야 하는거)
 #그 다음에 GraphDataset 만들어서 써야하나봄..? 모람.. 이게..모야..
@@ -115,8 +111,8 @@ class GraphDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-#
-#
+
+
 # class GraphDataset(Dataset):
 #     def __init__(self, x_tensor,edge_index, batch, y_tensor, ):
 #         super(GraphDataset, self).__init__()

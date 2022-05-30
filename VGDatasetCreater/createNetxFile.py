@@ -105,15 +105,14 @@ import pickle
 #
 # igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
 # igList = [49,59,155,240,283,298,316,370,42,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
-
+#
 # a = ut.AllEdges(data,393)
 # print(a)
 # b = ut.AllEdges(data,394)
 # print(b)
 # c = ut.AllEdges(data,395)
 # print(c)
-# sys.exit()
-
+#
 # for i in tqdm(range(imgCnt)):
 #     if i in igList :
 #         continue
@@ -121,6 +120,7 @@ import pickle
 #         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
 #         df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
 #         gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+#         nx.set_node_attributes(gI, 1, "weight")
 #         gList.append(gI)
 #
 # with open("./data/networkx1000.pickle", "wb") as fw:
@@ -130,6 +130,8 @@ import pickle
 #     data = pickle.load(fr)
 #
 # print(len(data))
+
+
 
 
 ''' NetworkX 객체에서 Adj 추출하기 - nodeList option으로 줘서 순서에 맞게!!'''
@@ -177,9 +179,9 @@ import pickle
 #         A = nx.adjacency_matrix(G, objIdList)  #
 #         # A1 = A.todense()
 #         adjMList.append(A)
-#
+
 # print(errorId)
-#
+
 # with open("./data/featMatrix1000.pickle", "wb") as fw:
 #     pickle.dump(featMList, fw)
 # with open("./data/adjMatrix1000.pickle", "wb") as fw:
@@ -187,21 +189,21 @@ import pickle
 
 
 '''
-    edgeList를 tensor로 만들고, (1000, 2, edge 개수)
+    edgeList를 tensor로 만들고, (1000, 2, edge 개수)   
 '''
-
-def mkEdgeTensor(edgeList) :
-    edgeIdxAll = []
-    for j in range(len(edgeList[0])) :
-        a = edgeList[0]
-        edgeIdxAll.append([torch.tensor(a[j]), torch.tensor(a[j])])
-        #edgeIdxAll.append((torch.tensor(a[0]), torch.tensor(a[1])))
-
-    with open("./data/edgeListTensor.pickle", "wb") as fw:
-        pickle.dump(edgeIdxAll, fw)
-
-    with open("./data/edgeListTensor.pickle", "rb") as fr:
-        data = pickle.load(fr)
+#
+# def mkEdgeTensor(edgeList) :
+#     edgeIdxAll = []
+#     for j in range(len(edgeList[0])) :
+#         a = edgeList[0]
+#         edgeIdxAll.append([torch.tensor(a[j]), torch.tensor(a[j])])
+#         #edgeIdxAll.append((torch.tensor(a[0]), torch.tensor(a[1])))
+#
+#     with open("./data/edgeListTensor.pickle", "wb") as fw:
+#         pickle.dump(edgeIdxAll, fw)
+#
+#     with open("./data/edgeListTensor.pickle", "rb") as fr:
+#         data = pickle.load(fr)
 
 # 실행
 # with open("./data/edgeList1000.pickle", "rb") as fr:
@@ -209,7 +211,7 @@ def mkEdgeTensor(edgeList) :
 # mkEdgeTensor(data)
 # with open("./data/edgeListTensor.pickle", "rb") as fr:
 #     data1 = pickle.load(fr)
-#
+
 # print(len(data1)) #1000
 # print(len(data1[0])) #2
 # print(len(data1[1])) #2
@@ -226,21 +228,21 @@ def mkEdgeTensor(edgeList) :
     networkx 를 가져와서 node 수 가져옴 -> 빈 리스트에 노드 수만큼 그래프 id를 채움
     
 '''
-import networkx as nx
-def mkBatch(netxList) :
-    batchList = []
-    for G in range(len(netxList)) :
-        num = len(nx.nodes(netxList[G]))
-        batch = [G for i in range(num)]  #G로 그래프의 노드 개수인 num만큼 리스트 batch를 초기화
-        batchList.append(torch.tensor(batch))
-    with open("./data/batch.pickle", "wb") as fw:
-        pickle.dump(batchList, fw)
-
-    with open("./data/batch.pickle", "rb") as fr:
-        data = pickle.load(fr)
-
-    return data
+# import networkx as nx
+# def mkBatch(netxList) :
+#     batchList = []
+#     for G in range(len(netxList)) :
+#         num = len(nx.nodes(netxList[G]))
+#         batch = [G for i in range(num)]  #G로 그래프의 노드 개수인 num만큼 리스트 batch를 초기화
+#         batchList.append(torch.tensor(batch))
+#     with open("./data/batch.pickle", "wb") as fw:
+#         pickle.dump(batchList, fw)
 #
+#     with open("./data/batch.pickle", "rb") as fr:
+#         data = pickle.load(fr)
+#
+#     return data
+
 # with open("./data/networkx1000.pickle", "rb") as fr:
 #     data = pickle.load(fr)
 # data1 = mkBatch(data)
@@ -253,3 +255,73 @@ def mkBatch(netxList) :
 # print(data1[1]) #[1, 1, 1, ... , 1, 1]
 # print(len(nx.nodes(data[1]))) #20
 # print(len(data1[1])) #20
+
+'''
+
+    preprocessing_csv file for dgl Graph Classifiaction with dgl  
+
+    graph_edges.csv: containing three columns:
+        graph_id: the ID of the graph.
+        src: the source node of an edge of the given graph.
+        dst: the destination node of an edge of the given graph.
+    -> edgeList Tensor 이용해서 만들면 될 듯
+
+    -> feature 값이 안들어가는데..?
+    graph_properties.csv: containing three columns:
+        graph_id: the ID of the graph.
+        label: the label of the graph.
+        num_nodes: the number of nodes in the graph.
+        ->num_nodes는 G.number_of_nodes()
+'''
+import csv
+# with open("./data/batch.pickle", "rb") as fr:
+#     batch = pickle.load(fr)
+# with open("./data/featMatrix1000_1.pickle", "rb") as fr:
+#     edgeListTensor = pickle.load(fr)
+
+#graph_edges.csv ---------------------행열 전환 전 <- zip 안 쓴 이유 : src가 list라 오류나서
+# with open("./data/edgeList1000.pickle", "rb") as fr:
+#     edgeList = pickle.load(fr)
+# # print(len(edgeList[0][0])) #src
+# # print(len(edgeList[1][0])) #dis
+#
+# graphId = range(len(edgeList[0]))
+# src = edgeList[0]
+# dst = edgeList[1]
+#
+# with open('./data/graph_edges.csv', 'w', newline='') as f:
+#     writer = csv.writer(f)
+#     writer.writerow(graphId)
+#     writer.writerow(src)
+#     writer.writerow(dst)
+# -------------------------------행열 전환 후 저장
+# import pandas as pd
+# import numpy as np
+# df=pd.read_csv("./data/graph_edges.csv", encoding='cp949')
+#
+# df=df.transpose()
+# print(df.head())
+# df.to_csv("./data/graph_edges.csv")
+# -----------------------------------------------------
+
+#graph_properties.csv -------------------------------
+with open("./data/clusterSifted1000.pickle", "rb") as fr:
+    labels = pickle.load(fr)
+with open("./data/networkx1000.pickle", "rb") as fr:
+   networkx = pickle.load(fr)
+
+
+graphId = range(1001)
+
+num_nodes = []
+for G in networkx :
+    num_nodes.append(G.number_of_nodes())
+
+with open('./data/graph_properties.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(graphId)
+    writer.writerow(labels)
+    writer.writerow(num_nodes)
+
+# ----------------------------------------------------
+

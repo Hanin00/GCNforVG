@@ -99,7 +99,7 @@ from tqdm import tqdm
 def siftCluster():
     testFile = open('./data/cluster5000.txt', 'r')
     readFile = testFile.readline()
-    oldLabel = (readFile[1:-1].replace("'", '')).split(',')
+    oldLabel = (readFile[0:-1].replace("'", '')).split(',')
     label = []
 
     siftListId = [50, 60, 156, 241, 284, 299, 317, 371, 403, 432, 512, 520, 647, 677, 745, 867, 930, 931, 1102, 1116,
@@ -109,7 +109,7 @@ def siftCluster():
         if i in siftListId:
             continue
         else:
-            label.append(i)
+            label.append(oldLabel[i])
         if (len(label) == 1000):
             break
 
