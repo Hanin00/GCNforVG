@@ -28,9 +28,10 @@ import matplotlib.pyplot as plt
 
 import sys
 
-dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
-data = dataset.data
-batch = dataset.data.batch
+# dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
+# data = dataset.data
+# batch = dataset.data.batch
+
 
 # 이미 layer가 구현되어 있으므로, stacking만 하면 된다.
 class GNNStack(nn.Module):
@@ -161,7 +162,7 @@ def train(dataset, task, writer):
         test_loader = loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
     # build model
-    model = GNNStack(max(dataset.num_node_features, 1), 32, dataset.num_classes, task=task)
+    model = GNNStack(max(dataset.num_node_features, 1), 32, dataset.gclasses, task=task)
     opt = optim.Adam(model.parameters(), lr=0.01)
 
     # train
@@ -220,8 +221,12 @@ def test(loader, model, is_validation=False):
 
 writer = SummaryWriter("./log/" + datetime.now().strftime("%Y%m%d-%H%M%S"))
 
-dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
-dataset = dataset.shuffle()
+
+import GenDatasetDgl as gds
+
+dataset = gds.VGDataset()
+#dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
+#dataset = dataset.shuffle()
 task = 'graph'
 
 model = train(dataset, task, writer)

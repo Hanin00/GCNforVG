@@ -28,9 +28,9 @@ V dataFrame(<heterograph.py)도 고쳐야한다는 문제 발생
 '''
 
 #device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
-#
-# edges = pd.read_csv('./data/graph_edges.csv', encoding='cp949')
-# properties = pd.read_csv("./data/graph_properties.csv", encoding='cp949')
+
+edges = pd.read_csv('./data/graph_edges.csv', encoding='cp949')
+properties = pd.read_csv("./data/graph_properties.csv", encoding='cp949')
 
 from dgl.data import DGLDataset
 # class VGDataset(DGLDataset):
@@ -41,8 +41,13 @@ class VGDataset(DGLDataset):
     def process(self):
         edges = pd.read_csv('./data/graph_edges.csv')
         properties = pd.read_csv("./data/graph_properties.csv")
+        with open("./data/featMatrix1000_1.pickle", "rb") as fr:
+            features = pickle.load(fr)
         self.graphs = []
         self.labels = []
+        self.dim_nfeats = 10
+
+        #feature 개수.. 10개? self.feature
 
         # Create a graph for each graph ID from the edges table.
         # First process the properties table into two dictionaries with graph IDs as keys.
@@ -65,6 +70,7 @@ class VGDataset(DGLDataset):
             num_nodes = num_nodes_dict[graph_id]
             label = label_dict[graph_id]
 
+
             # Create a graph and add it to the list of graphs and labels.
             g = dgl.graph((src, dst), num_nodes=num_nodes)
             self.graphs.append(g)
@@ -72,6 +78,7 @@ class VGDataset(DGLDataset):
 
         # Convert the label list to tensor for saving.
         self.labels = torch.LongTensor(self.labels)
+        self.gclasses = int(max(self.labels)+1)
 
     def __getitem__(self, i):
         return self.graphs[i], self.labels[i]
@@ -79,8 +86,9 @@ class VGDataset(DGLDataset):
     def __len__(self):
         return len(self.graphs)
 
-dataset = VGDataset()
-graph, label = dataset[0]
+
+# dataset = VGDataset()
+# graph, label = dataset[0]
 #print(graph, label)
 
 # with open("./data/VGDataset.pickle", "wb") as fw:

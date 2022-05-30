@@ -356,22 +356,22 @@ import pickle
 
 # #graph_edges.csv ---------------------행열 전환 전 <- zip 안 쓴 이유 : src가 list라 오류나서
 
-with open("./data/edgeList1000.pickle", "rb") as fr:
-    edgeList = pickle.load(fr)
-
-graphId = range(1000)
-srcList = edgeList[0]
-dstList = edgeList[1]
-
-with open('./data/graph_edges.csv', 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(['graph_id', 'src','dst'])
-    for graph_id in graphId:
-        for j in range(len(srcList[graph_id])):
-            src = srcList[graph_id][j]
-            dst = dstList[graph_id][j]
-            writer.writerow([graph_id, src, dst])
-            writer.writerow([graph_id, dst, src])
+# with open("./data/edgeList1000.pickle", "rb") as fr:
+#     edgeList = pickle.load(fr)
+#
+# graphId = range(1000)
+# srcList = edgeList[0]
+# dstList = edgeList[1]
+#
+# with open('./data/graph_edges.csv', 'w', newline='') as f:
+#     writer = csv.writer(f)
+#     writer.writerow(['graph_id', 'src','dst'])
+#     for graph_id in graphId:
+#         for j in range(len(srcList[graph_id])):
+#             src = srcList[graph_id][j]
+#             dst = dstList[graph_id][j]
+#             writer.writerow([graph_id, src, dst])
+#             writer.writerow([graph_id, dst, src])
 
 
 #graph_properties.csv -------------------------------
