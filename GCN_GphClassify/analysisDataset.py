@@ -32,25 +32,6 @@ dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
 data = dataset.data
 batch = dataset.data.batch
 
-print(data)
-print(type(data))
-print(batch)
-
-
-sys.exit()
-
-
-
-
-
-
-
-
-
-
-
-
-
 # 이미 layer가 구현되어 있으므로, stacking만 하면 된다.
 class GNNStack(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, task='node'):
