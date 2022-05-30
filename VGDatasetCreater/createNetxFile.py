@@ -1,9 +1,8 @@
 import sys
-
 import numpy as np
 import pandas as pd
 import torch
-
+import csv
 import util as ut
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -94,6 +93,8 @@ import pickle
 
 '''
     networkX 생성 -> featureMatrix를 fasttext로 만드는데 objname이 너무 적어서인지 오류나던 이미지 제외하고 생성
+    weight 값 default=1
+    node id 그대로 <- feature 반영 할 때 필요할까봐?
 '''
 # gList = []
 # imgCnt = 1200
@@ -103,8 +104,8 @@ import pickle
 # end = time.time()
 # print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
 #
-# igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
-# igList = [49,59,155,240,283,298,316,370,42,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
+#igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+# 이거 아님 igList = [49,59,155,240,283,298,316,370,402,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
 #
 # a = ut.AllEdges(data,393)
 # print(a)
@@ -118,6 +119,7 @@ import pickle
 #         continue
 #     else :
 #         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
+#
 #         df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
 #         gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
 #         nx.set_node_attributes(gI, 1, "weight")
@@ -130,6 +132,59 @@ import pickle
 #     data = pickle.load(fr)
 #
 # print(len(data))
+# print(data[0])
+# print(data[0].nodes.data)
+
+
+
+'''
+    networkX 생성 
+    -> graph 마다 node id 0으로 시작하도록 변경     
+'''
+# gList = []
+# imgCnt = 1200
+# start = time.time()
+# with open('./data/scene_graphs.json') as file:  # open json file
+#     data = json.load(file)
+# end = time.time()
+# print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
+# # 이거 아님 igList = [49,59,155,240,283,298,316,370,402,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
+# igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+#
+# # a = ut.AllEdges(data,393)
+# # print(a)
+# # b = ut.AllEdges(data,394)
+# # print(b)
+# # c = ut.AllEdges(data,395)
+# # print(c)
+#
+# for i in tqdm(range(imgCnt)):
+#     if i in igList :
+#         continue
+#     else :
+#         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
+#
+#         listA = list(set(objId + subjId))
+#         listIdx = range(len(listA))
+#         dictIdx = {name:value for name, value in zip(listA, listIdx)}
+#
+#         df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
+#         gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+#         gI = nx.relabel_nodes(gI, dictIdx)
+#         nx.set_node_attributes(gI, 1, "weight")
+#         gList.append(gI)
+#
+# with open("./data/networkx1000.pickle", "wb") as fw:
+#     pickle.dump(gList[:1000], fw)
+# #
+# with open("./data/networkx1000.pickle", "rb") as fr:
+#     data = pickle.load(fr)
+#
+# print(len(data))
+# print(data[0])
+# print(data[0].edges.data)
+# print(data[48].nodes.data)
+# print(data[49].nodes.data)
 
 
 
@@ -186,6 +241,30 @@ import pickle
 #     pickle.dump(featMList, fw)
 # with open("./data/adjMatrix1000.pickle", "wb") as fw:
 #     pickle.dump(adjMList, fw)
+
+
+
+'''
+    edgeList local 저장 및 확인
+'''
+# with open("./data/networkx1000.pickle", "rb") as fr:
+#     netx = pickle.load(fr)
+#
+# import util as ut
+# n1, n2 = ut.mkEdgelistPerRange(netx, 1000)
+# edgeList = [n1, n2]
+#
+# with open('./data/edgeList1000.pickle', 'wb') as f:
+#     pickle.dump(edgeList[:1001], f)
+#
+# with open("./data/edgeList1000.pickle", "rb") as fr:
+#     edgeList = pickle.load(fr)
+#
+# print(len(edgeList))
+# print(edgeList[0])
+# print(len(edgeList[0][0]))
+# print(len(edgeList[0][1]))
+
 
 
 '''
@@ -273,54 +352,53 @@ import pickle
         num_nodes: the number of nodes in the graph.
         ->num_nodes는 G.number_of_nodes()
 '''
-import csv
+
 
 # #graph_edges.csv ---------------------행열 전환 전 <- zip 안 쓴 이유 : src가 list라 오류나서
-# #
-# with open("./data/edgeList1000.pickle", "rb") as fr:
-#     edgeList = pickle.load(fr)
-#
-# graphId = range(1000)
-# srcList = edgeList[0]
-# dstList = edgeList[1]
-#
-# with open('../GCN_GphClassify/data/graph_edges.csv', 'w', newline='') as f:
-#     writer = csv.writer(f)
-#     writer.writerow(['graphId', 'src','dst'])
-#     for graph_id in graphId:
-#         for j in range(len(srcList[graph_id])):
-#             src = srcList[graph_id][j]
-#             dst = dstList[graph_id][j]
-#             writer.writerow([graph_id, src, dst])
-#             writer.writerow([graph_id, dst, src])
-#     writer.writerow(graphId)
+
+with open("./data/edgeList1000.pickle", "rb") as fr:
+    edgeList = pickle.load(fr)
+
+graphId = range(1000)
+srcList = edgeList[0]
+dstList = edgeList[1]
+
+with open('./data/graph_edges.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['graph_id', 'src','dst'])
+    for graph_id in graphId:
+        for j in range(len(srcList[graph_id])):
+            src = srcList[graph_id][j]
+            dst = dstList[graph_id][j]
+            writer.writerow([graph_id, src, dst])
+            writer.writerow([graph_id, dst, src])
 
 
 #graph_properties.csv -------------------------------
-with open("./data/clusterSifted1000.pickle", "rb") as fr:
-    labels = pickle.load(fr)
-with open("./data/networkx1000.pickle", "rb") as fr:
-   networkx = pickle.load(fr)
-
-
-graphId = range(1000)
-
-num_nodes = []
-for G in networkx :
-    num_nodes.append(G.number_of_nodes())
-
-with open('./data/graph_properties.csv', 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(graphId)
-    writer.writerow(labels)
-    writer.writerow(num_nodes)
-
-# -------------------------------행열 전환 후 저장
-import pandas as pd
-import numpy as np
-df=pd.read_csv("./data/graph_properties.csv", encoding='cp949')
-df=df.transpose()
-df.to_csv("./data/graph_properties.csv")
-print(df.head())
+# with open("./data/clusterSifted1000.pickle", "rb") as fr:
+#     labels = pickle.load(fr)
+# with open("./data/networkx1000.pickle", "rb") as fr:
+#    networkx = pickle.load(fr)
+#
+#
+# graphId = range(1000)
+#
+# num_nodes = []
+# for G in networkx :
+#     num_nodes.append(G.number_of_nodes())
+#
+# with open('./data/graph_properties.csv', 'w', newline='') as f:
+#     writer = csv.writer(f)
+#     writer.writerow(graphId)
+#     writer.writerow(labels)
+#     writer.writerow(num_nodes)
+#
+# # -------------------------------행열 전환 후 저장
+# import pandas as pd
+# import numpy as np
+# df=pd.read_csv("./data/graph_properties.csv", encoding='cp949')
+# df=df.transpose()
+# df.to_csv("./data/graph_properties.csv")
+# print(df.head())
 
 # -----------------------------------------------------

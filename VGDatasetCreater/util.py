@@ -165,9 +165,9 @@ def mkEdgelistPerRange(netx, num):
     return n1, n2
 
 
-'''
-    edgeList local 저장 및 확인
-'''
+# '''
+#     edgeList local 저장 및 확인
+# '''
 # with open("./data/networkx1000.pickle", "rb") as fr:
 #     netx = pickle.load(fr)
 #
