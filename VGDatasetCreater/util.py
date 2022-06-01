@@ -58,7 +58,8 @@ def AllEdges(data, ImgId):
 # Object Embedding 값 - objectName에 맞춰서 Embedding한 값을 ObjectId에 맞춰(len(objId),10)의 형태로 반환
 ''' ObjName에 기반한 FastTextEmbedding 값 추출 및 dict(ObjName : Embedding) 반환이었으나 변경
     근데 id:Embedding으로 찾을 수 있어야 함.
-    feature의 type은 torch.float 형
+    feature의 type은 torch.float 형 <- dgl.from_networkx를 하려면 attr이 tensor로 변경 가능해야함
+    -> torch.FloatTensor 형이 아닌 단순 array(float) 형으로 변경함 <networkx1000_noTensor.pickle임
     ObjName에 기반한 FastTextEmbedding 값 추출 및 dict(ObjId : Embedding) 반환 '''
 def FeatEmbeddPerImg(objectIds, objectNames):
     # a = []
@@ -75,7 +76,8 @@ def FeatEmbeddPerImg(objectIds, objectNames):
     for i in objectNames: #objName 개수만큼만 반복하니까 vocab에 추가해 준 거 신경 X. Id:Embedding 값으로 dict 생성
         embedding.append(model.wv[i])
     # objectNames, Embedding 형태로 Dict 저장
-    embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
+    embDict = {name: value for name, value in zip(objectIds, embedding)}
+    #embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
 
     return embDict
 

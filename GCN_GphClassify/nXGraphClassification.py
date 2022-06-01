@@ -72,8 +72,8 @@ for epoch in range(20):
 num_correct = 0
 num_tests = 0
 for batched_graph, labels in test_dataloader:
-    #pred = model(batched_graph, batched_graph.ndata['attr'].float())
-    pred = model(batched_graph, batched_graph.featList.float())
+    pred = model(batched_graph, batched_graph.ndata['attr'].float())
+    #pred = model(batched_graph, batched_graph.featList.float())
     num_correct += (pred.argmax(1) == labels).sum().item()
     num_tests += len(labels)
 
