@@ -66,125 +66,58 @@ import pickle
     NetworkX 객체 리스트 생성 - 1000개의 이미지에 대한 ObjId, SubjId의 realationship에 대한 Graph 객체 생성
     -> 총 1000개의 undirected Graph
     size (1000, [ObjId 개수])
+    
     >> AddEdges 사용
-'''
-# gList = []
-# imgCnt = 1000
-# start = time.time()
-# with open('./data/scene_graphs.json') as file:  # open json file
-#     data = json.load(file)
-# end = time.time()
-# print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
-#
-# for i in tqdm(range(imgCnt)):
-#     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
-#     df_edge = pd.DataFrame({"objId": objId, "subjId": subjId,})
-#     gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
-#     gList.append(gI)
-#
-# with open("./data/networkx1000.pickle", "wb") as fw:
-#     pickle.dump(gList, fw)
-
-# with open("./data/networkx1000.pickle", "rb") as fr:
-#     data = pickle.load(fr)
-
-# G = data[1]
-# print(G.nodes.data())
-
-'''
-    networkX 생성 -> featureMatrix를 fasttext로 만드는데 objname이 너무 적어서인지 오류나던 이미지 제외하고 생성
+    AllNodes를 통해 중복이 제거된 ObjId와 ObjNameList를 이용해 FeatEmbeddingPerImg에서 Dict를 얻어
+    각 노드에 feature(fastText Embedding 값)를 node의 ['attr']로 부여함
+    이때 각 fastText Embddding 값의 type은 torch.float32형
+    
+      networkX 생성 -> featureMatrix를 fasttext로 만드는데 objname이 너무 적어서인지 오류나던 이미지 제외하고 생성
     weight 값 default=1
     node id 그대로 <- feature 반영 할 때 필요할까봐?
+    
+    networkX 생성 
+    -> graph 마다 node id 0으로 시작하도록 변경     
 '''
-# gList = []
-# imgCnt = 1200
-# start = time.time()
-# with open('./data/scene_graphs.json') as file:  # open json file
-#     data = json.load(file)
-# end = time.time()
-# print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
-#
-#igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+gList = []
+imgCnt = 1200
+start = time.time()
+with open('./data/scene_graphs.json') as file:  # open json file
+    data = json.load(file)
+end = time.time()
+print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
 # 이거 아님 igList = [49,59,155,240,283,298,316,370,402,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
-#
+igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+
 # a = ut.AllEdges(data,393)
 # print(a)
 # b = ut.AllEdges(data,394)
 # print(b)
 # c = ut.AllEdges(data,395)
 # print(c)
-#
-# for i in tqdm(range(imgCnt)):
-#     if i in igList :
-#         continue
-#     else :
-#         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
-#
-#         df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
-#         gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
-#         nx.set_node_attributes(gI, 1, "weight")
-#         gList.append(gI)
-#
-# with open("./data/networkx1000.pickle", "wb") as fw:
-#     pickle.dump(gList[:1000], fw)
-#
-# with open("./data/networkx1000.pickle", "rb") as fr:
-#     data = pickle.load(fr)
-#
-# print(len(data))
-# print(data[0])
-# print(data[0].nodes.data)
 
+for i in tqdm(range(imgCnt)):
+    if i in igList :
+        continue
+    else :
+        objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
 
+        listA = list(set(objId + subjId))
+        listIdx = range(len(listA))
+        dictIdx = {name:value for name, value in zip(listA, listIdx)}
 
-'''
-    networkX 생성 
-    -> graph 마다 node id 0으로 시작하도록 변경     
-'''
-# gList = []
-# imgCnt = 1200
-# start = time.time()
-# with open('./data/scene_graphs.json') as file:  # open json file
-#     data = json.load(file)
-# end = time.time()
-# print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
-# # 이거 아님 igList = [49,59,155,240,283,298,316,370,402,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
-# igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+        df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
+        gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+        gI = nx.relabel_nodes(gI, dictIdx)
+        nx.set_node_attributes(gI, 1, "weight")
+        gList.append(gI)
+
+with open("./data/networkx1000.pickle", "wb") as fw:
+    pickle.dump(gList[:1000], fw)
 #
-# # a = ut.AllEdges(data,393)
-# # print(a)
-# # b = ut.AllEdges(data,394)
-# # print(b)
-# # c = ut.AllEdges(data,395)
-# # print(c)
-#
-# for i in tqdm(range(imgCnt)):
-#     if i in igList :
-#         continue
-#     else :
-#         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
-#
-#         listA = list(set(objId + subjId))
-#         listIdx = range(len(listA))
-#         dictIdx = {name:value for name, value in zip(listA, listIdx)}
-#
-#         df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
-#         gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
-#         gI = nx.relabel_nodes(gI, dictIdx)
-#         nx.set_node_attributes(gI, 1, "weight")
-#         gList.append(gI)
-#
-# with open("./data/networkx1000.pickle", "wb") as fw:
-#     pickle.dump(gList[:1000], fw)
-# #
-# with open("./data/networkx1000.pickle", "rb") as fr:
-#     data = pickle.load(fr)
-#
-# print(len(data))
-# print(data[0])
-# print(data[0].edges.data)
-# print(data[48].nodes.data)
-# print(data[49].nodes.data)
+with open("./data/networkx1000.pickle", "rb") as fr:
+    data = pickle.load(fr)
+
 
 
 
