@@ -3,6 +3,8 @@
 import numpy as np
 import pandas as pd
 import json
+
+import torch
 from openpyxl import Workbook
 from gensim.models import FastText
 from tqdm import tqdm
@@ -54,8 +56,11 @@ def AllEdges(data, ImgId):
 
 
 # Object Embedding 값 - objectName에 맞춰서 Embedding한 값을 ObjectId에 맞춰(len(objId),10)의 형태로 반환
-''' ObjName에 기반한 FastTextEmbedding 값 추출 및 dict(ObjId : ObjName) 반환 '''
-def FeatEmbeddPerImg(objectNames):
+''' ObjName에 기반한 FastTextEmbedding 값 추출 및 dict(ObjName : Embedding) 반환이었으나 변경
+    근데 id:Embedding으로 찾을 수 있어야 함.
+    feature의 type은 torch.float 형
+    ObjName에 기반한 FastTextEmbedding 값 추출 및 dict(ObjId : Embedding) 반환 '''
+def FeatEmbeddPerImg(objectIds, objectNames):
     # a = []
     # a.append(objectNames)
     # model = FastText(a, vector_size=10, workers=4, sg=1, word_ngrams=1)
@@ -67,10 +72,10 @@ def FeatEmbeddPerImg(objectNames):
     model = FastText(objectNames, vector_size=10, workers=4, sg=1, word_ngrams=1)
     #model.build_vocab(objectNames)
     embedding = []
-    for i in objectNames:
+    for i in objectNames: #objName 개수만큼만 반복하니까 vocab에 추가해 준 거 신경 X. Id:Embedding 값으로 dict 생성
         embedding.append(model.wv[i])
     # objectNames, Embedding 형태로 Dict 저장
-    embDict = {name: value for name, value in zip(objectNames, embedding)}
+    embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
 
     return embDict
 
@@ -168,7 +173,7 @@ def mkEdgelistPerRange(netx, num):
 # '''
 #     edgeList local 저장 및 확인
 # '''
-# with open("./data/networkx1000.pickle", "rb") as fr:
+# with open("./data/_networkx1000.pickle", "rb") as fr:
 #     netx = pickle.load(fr)
 #
 # n1, n2 = mkEdgelistPerRange(netx, 1000)

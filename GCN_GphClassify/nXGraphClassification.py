@@ -3,13 +3,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import dgl.data
-from VGDatasetCreater import GenDatasetDgl as gds
+from VGDatasetCreater import GenDSNxtoDgl as gds
 
-# Generate a synthetic dataset with 10000 graphs, ranging from 10 to 500 nodes.
+
+#Generate a synthetic dataset with 10000 graphs, ranging from 10 to 500 nodes.
 #dataset = dgl.data.GINDataset('PROTEINS', self_loop=True)
-dataset = gds.VGDataset()
 
+
+dataset = gds.VGDataset()
 print('Number of graph categories:', dataset.gclasses)
+#sys.exit
 
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -60,8 +63,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 for epoch in range(20):
     for batched_graph, labels in train_dataloader:
-        #pred = model(batched_graph, batched_graph.ndata['attr'].float())
-        pred = model(batched_graph, batched_graph.featList.float())
+        pred = model(batched_graph, batched_graph.ndata['attr'].float())
         loss = F.cross_entropy(pred, labels)
         optimizer.zero_rad()
         loss.backward()

@@ -77,7 +77,7 @@ def mkEdgelistPerRange(netx, num):
 '''
     edgeList local 저장 및 확인
 '''
-# with open("./data/networkx1000.pickle", "rb") as fr:
+# with open("./data/_networkx1000.pickle", "rb") as fr:
 #     netx = pickle.load(fr)
 #
 # n1, n2 = mkEdgelistPerRange(netx, 1000)
