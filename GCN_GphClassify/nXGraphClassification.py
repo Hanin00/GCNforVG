@@ -4,15 +4,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 import dgl.data
 from VGDatasetCreater import GenDSNxtoDgl as gds
-
+from tqdm import tqdm
 
 #Generate a synthetic dataset with 10000 graphs, ranging from 10 to 500 nodes.
 #dataset = dgl.data.GINDataset('PROTEINS', self_loop=True)
 
-
 dataset = gds.VGDataset()
-print('Number of graph categories:', dataset.gclasses)
-#sys.exit
+# print('Number of graph categories:', dataset.gclasses)
 
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -30,16 +28,16 @@ test_dataloader = GraphDataLoader(
 
 it = iter(train_dataloader)
 batch = next(it)
-print(batch)
+#print(batch)
 
 batched_graph, labels = batch
-print('Number of nodes for each graph element in the batch:', batched_graph.batch_num_nodes())
-print('Number of edges for each graph element in the batch:', batched_graph.batch_num_edges())
+# print('Number of nodes for each graph element in the batch:', batched_graph.batch_num_nodes())
+# print('Number of edges for each graph element in the batch:', batched_graph.batch_num_edges())
 
 # Recover the original graph elements from the minibatch
 graphs = dgl.unbatch(batched_graph)
-print('The original graphs in the minibatch:')
-print(graphs)
+# print('The original graphs in the minibatch:')
+# print(graphs)
 
 from dgl.nn import GraphConv
 
@@ -59,25 +57,50 @@ class GCN(nn.Module):
 # Create the model with given dimensions
 
 model = GCN(dataset.dim_nfeats, 16, dataset.gclasses)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
-for epoch in range(20):
+print("train")
+for epoch in tqdm(range(2000)):
     for batched_graph, labels in train_dataloader:
         pred = model(batched_graph, batched_graph.ndata['attr'].float())
         loss = F.cross_entropy(pred, labels)
-        optimizer.zero_rad()
+        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
 num_correct = 0
 num_tests = 0
-for batched_graph, labels in test_dataloader:
+print("test")
+for batched_graph, labels in tqdm(test_dataloader):
     pred = model(batched_graph, batched_graph.ndata['attr'].float())
     #pred = model(batched_graph, batched_graph.featList.float())
     num_correct += (pred.argmax(1) == labels).sum().item()
     num_tests += len(labels)
+    print("num_correct : ", num_correct)
+    print("num_tests : ", num_tests)
 
 print('Test accuracy:', num_correct / num_tests)
 
 
 #print('Node feature dimensionality:', dataset.dim_nfeats)
+
+
+'''
+    Test acc per epoch
+    epoch 20 : 0.0  lr = 0.01
+    epoch 200 : 0.0  lr = 0.01
+    epoch 20000 : 0.0  lr = 0.01
+    
+        
+    epoch 2000 : 0.0  lr = 0.0001
+    epoch 20000 : 0.0  lr = 0.0001
+    
+    
+    
+    그래프 100개에 대해
+    epoch 2000 : 0.0  lr = 0.01
+    epoch 20000 : 0.0  lr = 0.01
+    
+    
+    
+'''

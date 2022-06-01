@@ -27,18 +27,13 @@ import tqdm
 
 from dgl.data import DGLDataset
 
-# with open("./data/networkx1000.pickle", "rb") as fr:
-#     networkXSet = pickle.load(fr)
-#     networkXSet = networkXSet[:1000]
-# with open("./data/clusterSifted1000.pickle", "rb") as fr:
-#     labels = pickle.load(fr)
-#
-# for nxGraph in networkXSet: #1000개 - label 개수 맞춰서
-#     print(nxGraph.nodes(data=True))
-#     dglGph = dgl.from_networkx(nxGraph, node_attrs=['attr', 'weight'])
-#     print(dglGph)
-#     break
 
+with open("./data/networkx1000_noTensor.pickle", "rb") as fr:
+    networkXSet = pickle.load(fr)
+networkXSet = networkXSet[:1000]
+
+with open("./data/clusterSifted1000.pickle", "rb") as fr:
+    labels = pickle.load(fr)
 
 
 class VGDataset(DGLDataset):
@@ -48,15 +43,9 @@ class VGDataset(DGLDataset):
     def process(self):
         # graph label, num_nodes 사용
 
-        with open("./data/networkx1000_noTensor.pickle", "rb") as fr:
-            networkXSet = pickle.load(fr)
-
-        with open("./data/clusterSifted1000.pickle", "rb") as fr:
-            labels = pickle.load(fr)
-
         self.graphs = [] #networkX 객체 변환. 이거 dgl로 변환해서 append? 기존엔 str, dtn으로 생성했었음
         #self.labels = labels
-        self.labels = labels[:100]
+        self.labels = labels
         self.dim_nfeats = 10
 
         for nxGraph in networkXSet: #1000개 - label 개수 맞춰서

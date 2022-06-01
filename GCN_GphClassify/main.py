@@ -7,7 +7,7 @@ import torch.nn.functional as F
 import scipy
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from analysisDataset import GraphDataset
+from TUGraphClassification import GraphDataset
 from torch.nn.parameter import Parameter
 from torch.utils.data import Dataset, DataLoader
 import model as md
