@@ -70,7 +70,7 @@ def FeatEmbeddPerImg(objectIds, objectNames):
     if(len(objectNames) <= 20):
         objectNames += ['road', 'taxi', 'door', 'taxi', 'wagon', 'man', 'stairs', 'suit', 'street', 'van', 'sign', 'car', 'symbol', 'car', 'trafficcone', 'ground', 'tag', 'lights', 'woman', 'cars', 'people','car', 'people', 'steps', ]
     model.build_vocab(objectNames)
-    model = FastText(objectNames, vector_size=10, workers=4, sg=1, word_ngrams=1)
+    model = FastText(objectNames, vector_size=3, workers=4, sg=1, word_ngrams=1)
     #model.build_vocab(objectNames)
     embedding = []
     for i in objectNames: #objName 개수만큼만 반복하니까 vocab에 추가해 준 거 신경 X. Id:Embedding 값으로 dict 생성
@@ -80,6 +80,42 @@ def FeatEmbeddPerImg(objectIds, objectNames):
     #embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
 
     return embDict
+
+'''
+    전체 word에 대한 fasttext Embedding값  - 01
+'''
+def FeatEmbeddPerTotal(objectNames):
+    # a = []
+    # a.append(objectNames)
+    # model = FastText(a, vector_size=10, workers=4, sg=1, word_ngrams=1)
+    model = FastText()
+    #vocab가 너무 적은 경우(5개 정도로) 정상 작동하지 않아 id 242의 objectName을 임의로 삽입함 -> Top Object를 넣는 게 더 나을 것 같기두..
+    model.build_vocab(objectNames)
+    model = FastText(objectNames, vector_size=3, workers=4, sg=1, word_ngrams=1)
+    #model.build_vocab(objectNames)
+    embedding = []
+    for i in objectNames: #objName 개수만큼만 반복하니까 vocab에 추가해 준 거 신경 X. Id:Embedding 값으로 dict 생성
+        embedding.append(model.wv[i])
+    # objectNames, Embedding 형태로 Dict 저장
+    totalEmbDict = {name: value for name, value in zip(objectNames, embedding)}
+    #embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
+
+    return totalEmbDict
+
+'''
+    전체 word에 대한 fasttext Embedding값  - 02 < 각 이미지 별 node Id/Name 매칭 
+    Dict(wordEmbedding - Word:Embedding) 을 이용해 Id : Embedding Dict를 반환하도록 변경    
+'''
+
+def MatchDictImage(objectIds, objectNames, totalEmbDict):
+    embList = []
+    for i in objectNames: #objName 개수만큼만 반복하니까 vocab에 추가해 준 거 신경 X. Id:Embedding 값으로 dict 생성
+        embList.append(totalEmbDict[i])
+    # objectNames, Embedding 형태로 Dict 저장
+    embDict = {name: value for name, value in zip(objectIds, embList)}
+
+    return embDict
+
 
 
 ''' objId에 맞는 FeatureEmbedding값으로 matrix 만듦 '''

@@ -1,3 +1,5 @@
+import sys
+
 import dgl
 import torch
 import torch.nn as nn
@@ -57,10 +59,10 @@ class GCN(nn.Module):
 # Create the model with given dimensions
 
 model = GCN(dataset.dim_nfeats, 16, dataset.gclasses)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 print("train")
-for epoch in tqdm(range(2000)):
+for epoch in tqdm(range(20000)):
     for batched_graph, labels in train_dataloader:
         pred = model(batched_graph, batched_graph.ndata['attr'].float())
         loss = F.cross_entropy(pred, labels)
@@ -76,8 +78,6 @@ for batched_graph, labels in tqdm(test_dataloader):
     #pred = model(batched_graph, batched_graph.featList.float())
     num_correct += (pred.argmax(1) == labels).sum().item()
     num_tests += len(labels)
-    print("num_correct : ", num_correct)
-    print("num_tests : ", num_tests)
 
 print('Test accuracy:', num_correct / num_tests)
 

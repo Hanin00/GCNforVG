@@ -27,10 +27,16 @@ import tqdm
 
 from dgl.data import DGLDataset
 
-
 with open("./data/networkx1000_noTensor.pickle", "rb") as fr:
     networkXSet = pickle.load(fr)
 networkXSet = networkXSet[:1000]
+
+print(networkXSet[0])
+print(networkXSet[0].nodes.data())
+print(networkXSet[0].nodes(data=True))
+
+sys.exit()
+
 
 with open("./data/clusterSifted1000.pickle", "rb") as fr:
     labels = pickle.load(fr)
