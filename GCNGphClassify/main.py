@@ -7,27 +7,25 @@ import torch.nn.functional as F
 import scipy
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from TUGraphClassification import GraphDataset
 from torch.nn.parameter import Parameter
 from torch.utils.data import Dataset, DataLoader
+from VGDatasetCreater import GenDSNxtoDgl as gds
 import model as md
 import random
 from tqdm import tqdm
 import numpy as np
 import sys
 
-with open("./data/adjMatrix1000.pickle", "rb") as fr:
-    data1 = pickle.load(fr)
-
-with open("./data/featMatrix1000.pickle", "rb") as fr:
-    data2 = pickle.load(fr)
-
+with open("./data/networkx1000.pickle", "rb") as fr:
+    netX = pickle.load(fr)
+netX = netX[:1000]
 with open("./data/clusterSifted1000.pickle", "rb") as fr:
-    data3 = pickle.load(fr)
+    labels = pickle.load(fr)
 
-adjMs = data1[:1000]
-featMs = data2[:1000]
-labels = data3[:1000]
+adjMs = []
+for graph in netX:
+    adjMs.append(nx.adjacency_matrix(graph).todense())
+#    featMs.append(graph.attr_matrix.todense())
 
 labels = torch.LongTensor(labels)
 
@@ -45,9 +43,8 @@ torch.manual_seed(777)
 if device == 'cuda':
     torch.cuda.manual_seed_all(777)
 
-
 # todo input-output / flatten(weight) / 일단 10개만 학습해보기
-dataset = GraphDataset(adjMs, labels)
+dataset = gds
 dataloader = DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=False)
 
 num_examples = len(dataset)
@@ -85,7 +82,7 @@ for epoch in range(20):
         batched_graph, labels, attr = batched_graph.to(device), labels.to(device), attr.to(device)
         batched_graph = batched_graph.squeeze().to(device)
 
-        n_labels = 10  # 10
+        n_labels = 15  # 10
         n_features = features.shape[1]  # 10  #features = Tensor(100,10)
         pred = model(n_features, n_labels, batched_graph).to(device)  # Tensor(1,100,100), features = Tensor(100,10)
 

@@ -212,9 +212,6 @@ def test(loader, model, is_validation=False):
 
 writer = SummaryWriter("./log/" + datetime.now().strftime("%Y%m%d-%H%M%S"))
 
-from VGDatasetCreater import GenDatasetDgl as gds
-
-dataset = gds.VGDataset()
 #dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
 #dataset = dataset.shuffle()
 task = 'graph'

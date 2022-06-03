@@ -21,7 +21,7 @@ df = pd.DataFrame(freObjList,columns = ['cluster'])
 
 #print(df)
 
-cluster12 = df[df['cluster']== ]
+cluster12 = df[df['cluster']]
 print(cluster12.head(5))
 aList = list(cluster12.head(5).index.tolist())
 

@@ -32,8 +32,8 @@ V dataFrame(<heterograph.py)도 고쳐야한다는 문제 발생
 
 #device = torch.device("cuda") if torch.cuda.is_available() else torch.device('cpu')
 
-edges = pd.read_csv('../GCN_GphClassify/data/graph_edges.csv', encoding='cp949')
-properties = pd.read_csv("../GCN_GphClassify/data/graph_properties.csv", encoding='cp949')
+edges = pd.read_csv('../GCNGphClassify/data/graph_edges.csv', encoding='cp949')
+properties = pd.read_csv("../GCNGphClassify/data/graph_properties.csv", encoding='cp949')
 
 from dgl.data import DGLDataset
 # class VGDataset(DGLDataset):
@@ -42,9 +42,9 @@ class VGDataset(DGLDataset):
         super().__init__(name='VisualGenome')
 
     def process(self):
-        edges = pd.read_csv('../GCN_GphClassify/data/graph_edges.csv')
-        properties = pd.read_csv("../GCN_GphClassify/data/graph_properties.csv")
-        with open("../GCN_GphClassify/data/featMatrix1000_1.pickle", "rb") as fr:
+        edges = pd.read_csv('../GCNGphClassify/data/graph_edges.csv')
+        properties = pd.read_csv("../GCNGphClassify/data/graph_properties.csv")
+        with open("../GCNGphClassify/data/featMatrix1000_1.pickle", "rb") as fr:
             features = pickle.load(fr)
         self.graphs = []
         self.labels = []
