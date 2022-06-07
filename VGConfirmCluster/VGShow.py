@@ -14,6 +14,23 @@ except ImportError:
     #from io import StringIO #..
     from io import BytesIO as ReadBytes
 
+
+def ImgShow(image) :
+    response = requests.get(image.url)
+    img = PIL_Image.open(ReadBytes(response.content))
+    plt.imshow(img)
+    plt.tick_params(labelbottom="Idx : {image}", labelleft=False)
+    plt.show()
+
+
+image_id5 = 6
+image1 = vg.get_image_data(id=image_id5)
+fig = plt.gcf()
+fig.set_size_inches(18.5, 10.5)
+ImgShow(image1)   # description을 idx 8번까지만 표시함
+
+sys.exit()
+
 image_id1 = 27
 image_id2 = 43
 image_id3 = 75

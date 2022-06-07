@@ -112,13 +112,4 @@ def objNameEmbedding(xWords):
     return embedding
 
 
-''' 
-feature matrix 2안 
-scene graph에서 object-predicate-subject를 scenetence로 묶어서 임베딩 
--> 질문 : 이때 각 단어에 대한 임베딩은 어케 구할건지? 
-    일일이 비교해서 구해야 하는지? 
-    word가 아니고 phrase인 경우에는? 
-    padding?
-    '''
-
 

@@ -76,28 +76,3 @@ class GraphLevelGNN(pl.LightningModule):
         _, acc = self.forward(batch, mode="test")
         self.log('test_acc', acc)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

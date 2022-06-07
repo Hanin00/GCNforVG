@@ -153,7 +153,7 @@ import pickle
 # '''dgl.from_networkx test'''
 # import dgl
 #
-# with open("./data/networkx1000.pickle", "rb") as fr:
+# with open("./data/networkx1000_attr.pickle", "rb") as fr:
 #     data = pickle.load(fr)
 
 

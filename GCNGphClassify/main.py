@@ -16,7 +16,7 @@ from tqdm import tqdm
 import numpy as np
 import sys
 
-with open("./data/networkx1000.pickle", "rb") as fr:
+with open("data/networkx1000_attr.pickle", "rb") as fr:
     netX = pickle.load(fr)
 netX = netX[:1000]
 with open("./data/clusterSifted1000.pickle", "rb") as fr:
