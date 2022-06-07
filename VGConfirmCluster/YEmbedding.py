@@ -13,8 +13,6 @@ from scipy.spatial import distance_matrix, distance
 ''' 1000개의 이미지 별로 region_graph 의 phrase 값을 embedding 하고, 각 이미지를 15개의 클러스터로 분류함
     각 이미지별 클러스터와 centroid 값을 추출하면 좋을 듯(centroid를 학습 시 feature map 에 반영 할 수 있나?(처음에 랜덤값 주고 centroid에 영향 받게끔 해서?))'''
 
-
-
 def visualize_regions(image, regions):
     fig = plt.gcf()
     fig.set_size_inches(18.5, 10.5)
