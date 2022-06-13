@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import dgl.data
-from VGDatasetCreater import GenDatasetDgl as gds
+from VGDatasetCreater.dum_dgl import GenDatasetDgl as gds
 
 #Generate a synthetic dataset with 10000 graphs, ranging from 10 to 500 nodes.
 #dataset = dgl.data.GINDataset('PROTEINS', self_loop=True)

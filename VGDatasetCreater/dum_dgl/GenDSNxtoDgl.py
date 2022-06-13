@@ -38,7 +38,7 @@ print(networkXSet[0].nodes(data=True))
 sys.exit()
 
 
-with open("./data/clusterSifted1000.pickle", "rb") as fr:
+with open("../data/clusterSifted1000.pickle", "rb") as fr:
     labels = pickle.load(fr)
 
 

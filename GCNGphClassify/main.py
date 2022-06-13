@@ -1,20 +1,13 @@
 import networkx as nx
 import pickle
-import matplotlib.pyplot as plt
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
-import scipy
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from torch.nn.parameter import Parameter
-from torch.utils.data import Dataset, DataLoader
-from VGDatasetCreater import GenDSNxtoDgl as gds
+from torch.utils.data import DataLoader
+from VGDatasetCreater.dum_dgl import GenDSNxtoDgl as gds
 import model as md
 import random
-from tqdm import tqdm
-import numpy as np
-import sys
 
 with open("data/networkx1000_attr.pickle", "rb") as fr:
     netX = pickle.load(fr)

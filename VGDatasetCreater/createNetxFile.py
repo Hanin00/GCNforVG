@@ -41,6 +41,7 @@ import pickle
 # # # fasttext 240마다 멈춰서
 # igList = [50, 60, 156, 241, 284, 299, 317, 371, 403, 432, 512, 520, 647, 677, 745, 867, 930, 931, 1102, 1116, 1136,
 #           1174, 1196]
+
 # for j in tqdm(range(1, imgCnt)):
 #     if j in igList:
 #         continue

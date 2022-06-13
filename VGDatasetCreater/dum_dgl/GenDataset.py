@@ -56,10 +56,10 @@ edgeIdxAll = []
 for i in range(len(edgeIdx)) :
     edgeIdxAll.append([torch.tensor(edgeIdx[i][0]),torch.tensor(edgeIdx[i][1])])
 
-with open("./data/edgeListTensor.pickle", "wb") as fw:
+with open("../data/edgeListTensor.pickle", "wb") as fw:
     pickle.dump(edgeIdxAll, fw)
 
-with open("./data/edgeListTensor.pickle", "rb") as fr:
+with open("../data/edgeListTensor.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 

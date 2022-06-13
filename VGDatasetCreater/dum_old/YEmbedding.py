@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
-from visual_genome import api as vg
+#from visual_genome import api as vg
 import urllib.request
+from PIL import Image
 import nltk
 import pandas as pd
 from sentence_transformers import SentenceTransformer
@@ -12,6 +13,8 @@ from scipy.spatial import distance_matrix, distance
 
 ''' 1000개의 이미지 별로 region_graph 의 phrase 값을 embedding 하고, 각 이미지를 15개의 클러스터로 분류함
     각 이미지별 클러스터와 centroid 값을 추출하면 좋을 듯(centroid를 학습 시 feature map 에 반영 할 수 있나?(처음에 랜덤값 주고 centroid에 영향 받게끔 해서?))'''
+
+
 
 def visualize_regions(image, regions):
     fig = plt.gcf()
@@ -88,10 +91,12 @@ def number_of_clusters(image_regions, key):
     plt.ylabel('Sum of squared distance')
     plt.show()
 
+
 """
 for key in key_list:
     number_of_clusters(image_regions, key)
 """
+
 
 def make_clusters(key, images_regions, n_clusters):
     data, assigned_clusters = clustering_question(images_regions, key, NUM_CLUSTERS=n_clusters)
@@ -191,7 +196,7 @@ def YEmbedding(xlxspath):
         # number of sentences x 768
     image_regions.head()
 
-    n_clusters = 15
+    n_clusters = 10
     embeddings_method = "embeddings_1"
     pd.set_option('display.max_columns', None)
 
