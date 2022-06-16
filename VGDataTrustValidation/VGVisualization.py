@@ -74,6 +74,7 @@ print('names : ', objects[1]['names'])
 
 sys.exit()
 
+
 #region_description load
 regions = vg.get_region_descriptions_of_image(id=image_id)
 # object loaction with phrase in first phrase of regions
