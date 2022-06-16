@@ -23,8 +23,9 @@ def ImgShow(image) :
     plt.show()
 
 
-image_id5 = 6
-image1 = vg.get_image_data(id=image_id5)
+image_id = 295
+
+image1 = vg.get_image_data(id=image_id)
 fig = plt.gcf()
 fig.set_size_inches(18.5, 10.5)
 ImgShow(image1)   # description을 idx 8번까지만 표시함

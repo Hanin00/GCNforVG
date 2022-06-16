@@ -41,6 +41,7 @@ import pickle
 # # # fasttext 240마다 멈춰서
 # igList = [50, 60, 156, 241, 284, 299, 317, 371, 403, 432, 512, 520, 647, 677, 745, 867, 930, 931, 1102, 1116, 1136,
 #           1174, 1196]
+
 # for j in tqdm(range(1, imgCnt)):
 #     if j in igList:
 #         continue
@@ -389,7 +390,7 @@ with open('./data/scene_graphs.json') as file:  # open json file
 end = time.time()
 print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
 # 이거 아님 igList = [49,59,155,240,283,298,316,370,402,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
-igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+# igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
 
 # a = ut.AllEdges(data,393)
 # print(a)
@@ -406,9 +407,9 @@ objNamesList = list(set(objNamesList))
 totalEmbDict = ut.FeatEmbeddPerTotal(objNamesList)
 
 for i in tqdm(range(imgCnt)):
-    if i in igList :
-        continue
-    else :
+    # if i in igList :
+    #     continue
+    # else :
         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
         # networkX graph 객체 생성 ---
         objIdSet, objNameList = ut.AllNodes(data, i)
@@ -427,11 +428,11 @@ for i in tqdm(range(imgCnt)):
         nx.set_node_attributes(gI, 1, "weight")
         gList.append(gI)
 
-with open("./data/networkx1000.pickle", "wb") as fw: #< node[nId]['attr'] = array(float)
+with open("./data/networkx1000_new.pickle", "wb") as fw: #< node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
     #pickle.dump(gList[:1000], fw)
 
-with open("./data/networkx1000.pickle", "rb") as fr:
+with open("./data/networkx1000_new.pickle", "rb") as fr:
     data = pickle.load(fr)
 nx1000 = data[:1000]
 print(len(nx1000))

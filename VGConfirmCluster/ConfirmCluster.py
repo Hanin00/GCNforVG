@@ -15,8 +15,7 @@ from typing import List
     이때, VisualGenome python driver에서  Stopword 삭제해서 확인
 '''
 
-
-image_id = 6
+image_id = 295
 phrase = []
 sumPhrase = []
 regions = vg.get_region_descriptions_of_image(id=image_id)
@@ -25,21 +24,19 @@ for i in regions :
     sumPhrase += (i.phrase.replace(',', ' ').replace('.',' '). split(' '))
 df = pd.DataFrame(phrase)
 
-print(df)
+#print(df)
 pList = Counter(sumPhrase)
 freHundred = pList.most_common(100)
-print(freHundred)
+#print(freHundred)
 cnt = 0
 for i in phrase :
-    if "table" in i :
+    if "floor" in i :
         print(i)
         cnt += 1
 print(cnt)
 
 
 sys.exit()
-
-
 
 
 testFile = open('data/cluster10000.txt', 'r')  # 'r' read의 약자, 'rb' read binary 약자 (그림같은 이미지 파일 읽을때)
