@@ -434,6 +434,7 @@ import pickle
 #
 # with open("./data/networkx1000_new.pickle", "rb") as fr:
 #     data = pickle.load(fr)
+
 # nx1000 = data[:1000]
 # print(len(nx1000))
 # print(nx1000[0].nodes(data=True))
