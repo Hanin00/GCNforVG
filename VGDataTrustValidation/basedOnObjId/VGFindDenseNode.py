@@ -41,8 +41,6 @@ with open('./data/scene_graphs.json') as file:  # open json file
 relationships = sceneJson[imgId]['relationships']
 print('relationships : ', len(relationships))
 
-
-
 print("sceneJson image_id : ", sceneJson[imgId]['image_id'])
 
 objSuj = []
@@ -55,8 +53,6 @@ df.columns = ['relId', 'objId','subId']
 
 print('total')
 print(df)
-
-
 
 print('used objectId count(non-overlap) : ', len(list(set(df['objId'].to_list() +df['subId'].to_list()))))
 
@@ -145,8 +141,6 @@ for rel in range(len(relationships)) :
 for relId in df2RelId :
     df2RelName.append(df2RelIdName[relId])
 df2['predicate'] = df2RelName
-
-
 
 
 #print(df2['idx'])

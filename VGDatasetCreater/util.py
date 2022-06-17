@@ -117,7 +117,6 @@ def MatchDictImage(objectIds, objectNames, totalEmbDict):
     return embDict
 
 
-
 ''' objId에 맞는 FeatureEmbedding값으로 matrix 만듦 '''
 def FeatureMatrix(objIdList, objDict, embDict):
     featM = []

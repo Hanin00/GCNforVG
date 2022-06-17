@@ -380,24 +380,88 @@ import pickle
 # print(df.head())
 
 # -----------------------------------------------------
+#
+#
+# gList = []
+# imgCnt = 1200
+# start = time.time()
+# with open('./data/scene_graphs.json') as file:  # open json file
+#     data = json.load(file)
+# end = time.time()
+# print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
+# # 이거 아님 igList = [49,59,155,240,283,298,316,370,402,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
+# # igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
+#
+# # a = ut.AllEdges(data,393)
+# # print(a)
+# # b = ut.AllEdges(data,394)
+# # print(b)
+# # c = ut.AllEdges(data,395)
+# # print(c)
+#
+# objNamesList = []
+# for imgId in tqdm(range(imgCnt)):
+#     objectIds, objectNames = ut.AllNodes(data, imgId)
+#     objNamesList += objectNames
+# objNamesList = list(set(objNamesList))
+# totalEmbDict = ut.FeatEmbeddPerTotal(objNamesList)
+#
+# for i in tqdm(range(imgCnt)):
+#     # if i in igList :
+#     #     continue
+#     # else :
+#         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
+#         # networkX graph 객체 생성 ---
+#         objIdSet, objNameList = ut.AllNodes(data, i)
+#         df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
+#         gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+#         nodesList = list(gI.nodes)
+#         # node attribute 부여 ---
+#         embDict = ut.MatchDictImage(objIdSet,objNameList,totalEmbDict)
+#         nx.set_node_attributes(gI, embDict, "attr") # node attribute 부여
+#
+#         # graph에서 노드 id 0부터 시작하도록 ---
+#         listA = list(set(objId + subjId))
+#         listIdx = range(len(listA))
+#         dictIdx = {name: value for name, value in zip(listA, listIdx)}
+#         gI = nx.relabel_nodes(gI, dictIdx)
+#         nx.set_node_attributes(gI, 1, "weight")
+#         gList.append(gI)
+#
+# with open("./data/networkx1000_new.pickle", "wb") as fw: #< node[nId]['attr'] = array(float)
+#     pickle.dump(gList, fw)
+#     #pickle.dump(gList[:1000], fw)
+#
+# with open("./data/networkx1000_new.pickle", "rb") as fr:
+#     data = pickle.load(fr)
+# nx1000 = data[:1000]
+# print(len(nx1000))
+# print(nx1000[0].nodes(data=True))
+# print(type(nx1000[0]))
+# print(nx1000[0].nodes.data)
 
+
+
+
+'''
+    0617일자 id 기반으로 그래프 생성 후 Object Name 기준 relabel 
+     -> relabel 된 node id 기반으로 그래프 생성 
+'''
+
+
+def get_key(val):
+    for key, value in idIdxDict.items():
+        if val == value:
+            return key
+    return "key doesn't exist"
 
 gList = []
-imgCnt = 1200
+imgCnt = 1000
 start = time.time()
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 end = time.time()
 print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec") # 파일 읽는데 걸리는 시간 : 24.51298 sec
-# 이거 아님 igList = [49,59,155,240,283,298,316,370,402,431,511,519,646,676,744,866,929,930,1101,1115,1135,1173,1195]
-# igList = [50,60,156,241,284,299,317,371,403,432,512,520,647,677,745,867,930,931,1102,1116,1136,1174,1196]
-
-# a = ut.AllEdges(data,393)
-# print(a)
-# b = ut.AllEdges(data,394)
-# print(b)
-# c = ut.AllEdges(data,395)
-# print(c)
 
 objNamesList = []
 for imgId in tqdm(range(imgCnt)):
@@ -407,35 +471,84 @@ objNamesList = list(set(objNamesList))
 totalEmbDict = ut.FeatEmbeddPerTotal(objNamesList)
 
 for i in tqdm(range(imgCnt)):
-    # if i in igList :
-    #     continue
-    # else :
-        objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data,i)
-        # networkX graph 객체 생성 ---
-        objIdSet, objNameList = ut.AllNodes(data, i)
-        df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
-        gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
-        nodesList = list(gI.nodes)
-        # node attribute 부여 ---
-        embDict = ut.MatchDictImage(objIdSet,objNameList,totalEmbDict)
-        nx.set_node_attributes(gI, embDict, "attr") # node attribute 부여
+    objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, i)
+    # networkX graph 객체 생성 ---
+    objIdSet, objNameList = ut.AllNodes(data, i)
+    # df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
 
-        # graph에서 노드 id 0부터 시작하도록 ---
-        listA = list(set(objId + subjId))
-        listIdx = range(len(listA))
-        dictIdx = {name: value for name, value in zip(listA, listIdx)}
-        gI = nx.relabel_nodes(gI, dictIdx)
-        nx.set_node_attributes(gI, 1, "weight")
-        gList.append(gI)
+    ''' 
+        Object Name List를 기준으로 ReLabeling(String -> Int)
+        Node List 생성
+        1. ObjNameList의 
+            relabel Dict - {name : newIdx}
+        2. newObjNameList = [],na
+        2. idIdxDict = {ObjIdSet : relabelDict[objIdSet]}
+        3. newObjId = idIdxDict[objId(i)]
+           newSubjId = idIdxDict[subjId(i)]
+    '''
+    # node attribute 부여 ---
+    relabelDict = {objName: i for i, objName in enumerate(objNameList)}
+    newObjIdList = []
+    for kId in range(len(objIdSet)):
+        newObjIdList.append(relabelDict[objNameList[kId]])
+    idIdxDict = {name: value for name, value in zip(objIdSet, newObjIdList)}
 
-with open("./data/networkx1000_new.pickle", "wb") as fw: #< node[nId]['attr'] = array(float)
+    newObjId= []
+    newSubjId= []
+    for oId in objId :
+        newObjId.append(idIdxDict[oId])
+    for sId in subjId :
+        newSubjId.append(idIdxDict[sId])
+
+    recurRowId = []
+    for j in range(len(newObjId)) :
+        if newObjId[j] == newSubjId[j] :
+            recurRowId.append(j)
+
+    embDict = ut.MatchDictImage(objIdSet, objNameList, totalEmbDict)
+    df_edge = pd.DataFrame({"objId": newObjId, "subjId": newSubjId, })
+
+    if recurRowId !=0 :
+        for idx in recurRowId :
+            df_edge = df_edge.drop(index = idx)
+
+    gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+    nodesList = list(gI.nodes)
+
+    for nodeId in nodesList:  # nodeId
+        '''
+            idIdxDict에서 nodeId가 value인 key를 찾으면 원래의 ObjectId 가 나옴,
+            원래의 Object Id로 Name을 찾음
+            Name을 토대로 totalEmbDict의 value를 호출
+        '''
+        originObjId = get_key(nodeId)
+        emb = embDict[originObjId]  # nodeId로 그래프 내 embDict(Id-Emb)에서 호출
+        for j in range(3):  # Embedding 값은 [3, ]인데, 각 원소를 특징으로 node에 할당
+            nx.set_node_attributes(gI, {nodeId: emb[j]}, "f" + str(j))
+
+    # graph에서 노드 id 0부터 시작하도록 ---
+    listA = list(set(objId + subjId))
+    listIdx = range(len(listA))
+    dictIdx = {name: value for name, value in zip(listA, listIdx)}
+    gI = nx.relabel_nodes(gI, dictIdx)
+    gList.append(gI)
+
+
+with open("./data/networkx_name.pickle", "wb") as fw: #< node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
     #pickle.dump(gList[:1000], fw)
 
-with open("./data/networkx1000_new.pickle", "rb") as fr:
+with open("./data/networkx_name.pickle", "rb") as fr:
     data = pickle.load(fr)
-nx1000 = data[:1000]
-print(len(nx1000))
-print(nx1000[0].nodes(data=True))
-print(type(nx1000[0]))
-print(nx1000[0].nodes.data)
+
+
+gId = 5
+gI = data[gId]
+print(data)
+print('data[gId] : ',data[gId])
+print('data[gId].nodes() : ',data[gId].nodes(data=True))
+
+plt.figure(figsize=[15, 7])
+nx.draw(gI, with_labels=True)
+plt.show()
+
