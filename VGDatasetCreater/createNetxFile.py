@@ -468,7 +468,15 @@ for imgId in tqdm(range(imgCnt)):
     objectIds, objectNames = ut.AllNodes(data, imgId)
     objNamesList += objectNames
 objNamesList = list(set(objNamesList))
+
 totalEmbDict = ut.FeatEmbeddPerTotal(objNamesList)
+with open("./data/totalEmbDict.pickle", "wb") as fw:
+    pickle.dump(totalEmbDict, fw)
+
+
+# with open("./data/totalEmbDict.pickle", "rb") as fr:
+#     data = pickle.load(fr)
+# totalEmbDict = data
 
 for i in tqdm(range(imgCnt)):
     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, i)
@@ -480,14 +488,17 @@ for i in tqdm(range(imgCnt)):
         Object Name List를 기준으로 ReLabeling(String -> Int)
         Node List 생성
         1. ObjNameList의 
-            relabel Dict - {name : newIdx}
-        2. newObjNameList = [],na
+            relabelDict - {name : newIdx}
+        2. newObjNameList = []
         2. idIdxDict = {ObjIdSet : relabelDict[objIdSet]}
         3. newObjId = idIdxDict[objId(i)]
            newSubjId = idIdxDict[subjId(i)]
+           
+           이름에 대한 NodeList
     '''
-    # node attribute 부여 ---
+    #이름이 중복되면 value 값 갱신됨
     relabelDict = {objName: i for i, objName in enumerate(objNameList)}
+
     newObjIdList = []
     for kId in range(len(objIdSet)):
         newObjIdList.append(relabelDict[objNameList[kId]])
@@ -508,7 +519,7 @@ for i in tqdm(range(imgCnt)):
     embDict = ut.MatchDictImage(objIdSet, objNameList, totalEmbDict)
     df_edge = pd.DataFrame({"objId": newObjId, "subjId": newSubjId, })
 
-    if recurRowId !=0 :
+    if recurRowId != 0 :
         for idx in recurRowId :
             df_edge = df_edge.drop(index = idx)
 
@@ -527,7 +538,7 @@ for i in tqdm(range(imgCnt)):
             nx.set_node_attributes(gI, {nodeId: emb[j]}, "f" + str(j))
 
     # graph에서 노드 id 0부터 시작하도록 ---
-    listA = list(set(objId + subjId))
+    listA = list(set(newObjId + newSubjId))
     listIdx = range(len(listA))
     dictIdx = {name: value for name, value in zip(listA, listIdx)}
     gI = nx.relabel_nodes(gI, dictIdx)
@@ -551,4 +562,3 @@ print('data[gId].nodes() : ',data[gId].nodes(data=True))
 plt.figure(figsize=[15, 7])
 nx.draw(gI, with_labels=True)
 plt.show()
-
