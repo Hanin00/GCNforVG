@@ -17,7 +17,7 @@ import pickle
 imgId = 5
 
 #data load
-with open('./data/scene_graphs.json') as file:  # open json file
+with open('../data/scene_graphs.json') as file:  # open json file
     sceneJson = json.load(file)
 
 

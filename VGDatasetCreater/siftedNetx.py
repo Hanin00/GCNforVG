@@ -34,7 +34,7 @@ def get_key(dict, val):
 
 
 gList = []
-imgCnt = 10
+imgCnt = 1000
 start = time.time()
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
@@ -68,7 +68,7 @@ for i in range(imgCnt):
 
     idToName = {id: name for id, name in zip(objIdSet, objNameList)}
 
-    ''' 
+    '''
     Neighbors의 objectName 확인, 5개 이상 동일한 경우, 해당 Neighbor의 Id를 묶고, sort 함.
     이후 전체 ObjId List에서 바꿔줌. Id로 이름 호출. get_key 사용해서 이름으로 Id 호출
     '''
@@ -80,25 +80,24 @@ for i in range(imgCnt):
 
     for nodeId in neighUpp5:
         neighbors = list(gI.neighbors(nodeId))
-
-        print('neighbors : ', neighbors)
-        # neiNames = map(idToName.get, neighbors)
         neiNames = [idToName[k] for k in neighbors]
-        print('list(neiNames : ', list(neiNames))
+        print('list(neiNames) : ', list(neiNames))
 
         sameName = list(Counter(neiNames).keys())
         sameNums = list(Counter(neiNames).values())
         sameUpp5 = list(filter(lambda num: num >= 5, sameNums))
 
-        print('sameName : ', sameName)
-        print('sameNums : ', sameNums)
-        print('sameUpp5 : ', sameUpp5)
+        #todo 분기처리 - 예외 단어 추가하기
+        exceptionalWords = []
 
         a = []
         if sameUpp5 != 0:
             for i in sameUpp5:
-                a.append(sameName[sameNums.index(i)])
-        print('a : ', a)
+                #todo 분기처리 - 여기서 고려대상 나오면 걍 넘기기
+                if sameName[sameNums.index(i)] in exceptionalWords :
+                    continue
+                else :
+                    a.append(sameName[sameNums.index(i)])
 
         if len(a) != 0:
             b = []
@@ -112,10 +111,6 @@ for i in range(imgCnt):
                 totalList.append(b)
                 nameList += a
 
-    print(fId)
-    print(totalList)
-    print(nameList)
-
     # 동일한 이름이 있을 때 nameList의 원소가 동일한 것들의 nameList.index() 구해서,
     # totalList(idx) 끼리 더하고, sort 해서 fId
     # if len(fId) != len(nameList) :
@@ -127,31 +122,28 @@ for i in range(imgCnt):
     replaceDict = {}
     for i in range(len(totalList)):
         for j in range(len(totalList[i])):
-            replaceDict[totalList[i][j]] = fId[i]
+            replaceDict[str(totalList[i][j])] = fId[i]
 
-    print(replaceDict)
+    print('replace : ', replaceDict)
 
     newObjList = []
     newSubjList = []
     if(len(replaceDict) != 0) :
         for i in objId:
             try:
-                newObjList.append(replaceDict[i])
+                newObjList.append(replaceDict[str(i)])
+                print('replaceDict[str(i)] : ',replaceDict[str(i)])
+                print(i,'를 ', replaceDict[str(i)],'로')
             except KeyError:
                 newObjList.append(i)
 
-
         for i in subjId:
             try:
-                newSubjList.append(replaceDict[i])
+                newSubjList.append(replaceDict[str(i)])
             except KeyError:
                 newSubjList.append(i)
-            # if replaceDict[i] != {} :
-            #     newSubjList.append(replaceDict[i])
-            # else :
-            #     newSubjList.append(i)
 
-        df_new = pd.DataFrame({"objId": objId, "subjId": subjId, })
+        df_new = pd.DataFrame({"objId": newObjList, "subjId": newSubjList, })
         gI = nx.from_pandas_edgelist(df_new, source='objId', target='subjId')
         nodesList = sorted(list(gI.nodes))
 
@@ -162,7 +154,7 @@ for i in range(imgCnt):
             nx.set_node_attributes(gI, {nodeId: emb[j]}, "f" + str(j))
 
     # graph에서 노드 id 0부터 시작하도록 ---
-    listA = list(set(objId + subjId))
+    listA = list(set(newObjList + newSubjList))
     listIdx = range(len(listA))
     dictIdx = {name: value for name, value in zip(listA, listIdx)}
     gI = nx.relabel_nodes(gI, dictIdx)
@@ -175,11 +167,10 @@ with open("./data/networkx_sifted.pickle", "wb") as fw:  # < node[nId]['attr'] =
 with open("./data/networkx_sifted.pickle", "rb") as fr:
     data = pickle.load(fr)
 
-gId = 5
-gI = gList[gId]
+gId = 294
+gI = data[gId]
 print(data)
 print('data[gId] : ', data[gId])
-print('data[gId].nodes() : ', data[gId].nodes(data=True))
 
 plt.figure(figsize=[15, 7])
 nx.draw(gI, with_labels=True)

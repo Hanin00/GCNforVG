@@ -20,7 +20,7 @@ image_id = 1
 #data load
 image = vg.get_image_data(image_id)
 
-with open('./data/scene_graphs.json') as file:  # open json file
+with open('../data/scene_graphs.json') as file:  # open json file
     sceneJson = json.load(file)
 
 # 0번 scenegraph의
@@ -38,7 +38,7 @@ subject_id = relationships[0]['subject_id']
 
 
 
-with open('./data/objects.json') as file:  # open json file
+with open('../data/objects.json') as file:  # open json file
     objects = json.load(file)
 
 
