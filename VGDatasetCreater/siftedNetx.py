@@ -143,7 +143,8 @@ for i in range(imgCnt):
             except KeyError:
                 newSubjList.append(i)
 
-        df_new = pd.DataFrame({"objId": newObjList, "subjId": newSubjList, })
+        objId, subjId = newObjList, newSubjList
+        df_new = pd.DataFrame({"objId": objId, "subjId": subjId, })
         gI = nx.from_pandas_edgelist(df_new, source='objId', target='subjId')
         nodesList = sorted(list(gI.nodes))
 
@@ -154,7 +155,7 @@ for i in range(imgCnt):
             nx.set_node_attributes(gI, {nodeId: emb[j]}, "f" + str(j))
 
     # graph에서 노드 id 0부터 시작하도록 ---
-    listA = list(set(newObjList + newSubjList))
+    listA = list(set(objId + subjId))
     listIdx = range(len(listA))
     dictIdx = {name: value for name, value in zip(listA, listIdx)}
     gI = nx.relabel_nodes(gI, dictIdx)
@@ -167,10 +168,17 @@ with open("./data/networkx_sifted.pickle", "wb") as fw:  # < node[nId]['attr'] =
 with open("./data/networkx_sifted.pickle", "rb") as fr:
     data = pickle.load(fr)
 
+
+
+
 gId = 294
 gI = data[gId]
 print(data)
 print('data[gId] : ', data[gId])
+
+
+
+
 
 plt.figure(figsize=[15, 7])
 nx.draw(gI, with_labels=True)
