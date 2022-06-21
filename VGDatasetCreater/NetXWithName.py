@@ -28,7 +28,7 @@ def get_key(val):
 
 
 gList = []
-imgCnt = 10
+imgCnt = 1000
 start = time.time()
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
@@ -87,6 +87,7 @@ for i in tqdm(range(imgCnt)):
     for oId in objId:
         newObjId.append(idIdxDict[oId])
         newObjName.append(idNameDict[oId])
+
     for sId in subjId:
         newSubjId.append(idIdxDict[sId])
         newSubjName.append(idNameDict[sId])
@@ -120,10 +121,10 @@ for i in tqdm(range(imgCnt)):
             Name을 토대로 totalEmbDict의 value를 호출
         '''
         originObjId = get_key(nodeId)
+        nx.set_node_attributes(gI, originObjId, "originId")
         emb = embDict[originObjId]  # nodeId로 그래프 내 embDict(Id-Emb)에서 호출
         for j in range(3):  # Embedding 값은 [3, ]인데, 각 원소를 특징으로 node에 할당
             nx.set_node_attributes(gI, {nodeId: emb[j]}, "f" + str(j))
-         #todo   nx.set_node_attributes(gI, {}, "name")
 
     # graph에서 노드 id 0부터 시작하도록 ---
     listA = list(set(newObjId + newSubjId))
@@ -133,26 +134,19 @@ for i in tqdm(range(imgCnt)):
     gList.append(gI)
 
 
-
-
-
-with open("./data/networkx_withName.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("./data/networkx_withNOriginId.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
     # pickle.dump(gList[:1000], fw)
 
-with open("./data/networkx_withName.pickle", "rb") as fr:
+with open("./data/networkx_withNOriginId.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 gId = 294
-gI = gList[gId]
+gI = data[gId]
 print(data)
-print('data[gId] : ', gList[gId])
-print('data[gId].nodes() : ', gList[gId].nodes(data=True))
+print('data[gId] : ', data[gId])
+print('data[gId].nodes() : ', data[gId].nodes(data=True))
 
 plt.figure(figsize=[15, 7])
 nx.draw(gI, with_labels=True)
 plt.show()
-
-
-
-
