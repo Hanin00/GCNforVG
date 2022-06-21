@@ -26,7 +26,6 @@ def get_key(val):
             return key
     return "key doesn't exist"
 
-
 gList = []
 imgCnt = 1000
 start = time.time()
@@ -34,6 +33,50 @@ with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 end = time.time()
 print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec")  # 파일 읽는데 걸리는 시간 : 24.51298 sec
+
+
+
+imgCnt = 10
+synsetList = []
+nonSysnsetList = []
+
+d = data[24]["objects"]
+
+for ImgId in range(imgCnt) :
+    imageDescriptions = data[ImgId]["objects"]
+    print("len(imageDescriptions : ",len(imageDescriptions))
+    for j in range(len(imageDescriptions)):  # 이미지의 object 개수만큼 반복
+        try :
+            a = imageDescriptions[j]['synsets'][0].split(".")
+            synsetList.append(a[0])
+        except Exception  :
+            nonSysnsetList.append(imageDescriptions[j]['names'][0])
+            print(Exception)
+            print("ImgId : ", ImgId)
+            print('j : ', j)
+
+
+
+synsetList = list(set(synsetList))
+nonSysnsetList = list(set(nonSysnsetList))
+
+print("synsetList : ", synsetList)
+print("nonSysnsetList : ", nonSysnsetList)
+print(len(synsetList))
+print(len(nonSysnsetList))
+
+
+
+
+
+
+
+sys.exit()
+
+
+
+
+
 
 objNamesList = []
 for imgId in tqdm(range(imgCnt)):
@@ -134,11 +177,11 @@ for i in tqdm(range(imgCnt)):
     gList.append(gI)
 
 
-with open("./data/networkx_withNOriginId.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("./data/networkx_synset.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
     # pickle.dump(gList[:1000], fw)
 
-with open("./data/networkx_withNOriginId.pickle", "rb") as fr:
+with open("./data/networkx_synset.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 gId = 294
