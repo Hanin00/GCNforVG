@@ -146,7 +146,9 @@ for imgId in tqdm(range(imgCnt)):
             newObjIdListforSynset.append(id)  # synset 이 없어 Dict에 없는 ObjId는 제외함
         except:
             continue
-totalEmbDict = ut.FeatEmbeddPerTotal(list(set(objNamesList)))
+model,totalEmbDict = ut.FeatEmbeddPerTotal(list(set(objNamesList)))
+with open("./data/totalEmbDict.pickle", "wb") as fw:
+    pickle.dump(model, fw)
 
 
 for i in tqdm(range(imgCnt)):

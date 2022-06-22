@@ -35,6 +35,7 @@ def AllNodes(data, imgId):
 # SceneGraph.json 사용
 ''' Relationship로 ObjId-SubjId 간 Edge 추출'''
 def AllEdges(data, ImgId):
+
     objId = []
     subjId = []
     relatiohship = []  # 혹시 모르니까 추가할래 Id 말고 Predicate로~
@@ -101,6 +102,26 @@ def FeatEmbeddPerTotal(objectNames):
     #embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
 
     return totalEmbDict
+
+
+def FeatEmbeddPerTotal_model(objectNames):
+    # a = []
+    # a.append(objectNames)
+    # model = FastText(a, vector_size=10, workers=4, sg=1, word_ngrams=1)
+    model = FastText()
+    #vocab가 너무 적은 경우(5개 정도로) 정상 작동하지 않아 id 242의 objectName을 임의로 삽입함 -> Top Object를 넣는 게 더 나을 것 같기두..
+    model.build_vocab(objectNames)
+    model = FastText(objectNames, vector_size=3, workers=4, sg=1, word_ngrams=1)
+    model.build_vocab(objectNames)
+    embedding = []
+    for i in objectNames: #objName 개수만큼만 반복하니까 vocab에 추가해 준 거 신경 X. Id:Embedding 값으로 dict 생성
+        embedding.append(model.wv[i])
+    # objectNames, Embedding 형태로 Dict 저장
+    totalEmbDict = {name: value for name, value in zip(objectNames, embedding)}
+    embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
+
+    return model,embDict
+
 
 '''
     전체 word에 대한 fasttext Embedding값  - 02 < 각 이미지 별 node Id/Name 매칭 
@@ -225,4 +246,13 @@ def mkEdgelistPerRange(netx, num):
 # print(len(edgeList))
 # print(edgeList[0])
 # print(len(edgeList[0][0]))
+
 # print(len(edgeList[0][1]))
+
+
+
+
+model = FeatEmbeddPerTotal_model(['test','asdf','oh','yoon','suck',"banana",'apple','cherry','grape'])
+print(model.wv['test'])
+print(model.wv['asdf'])
+print(model.wv['band'])
