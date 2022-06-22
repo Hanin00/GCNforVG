@@ -25,9 +25,6 @@ from nltk.corpus import conll2000
     -> 첫번째의 id 값으로 node id를 모두 변경하는 List를 새로 만들어서, 
     3. 중요 object Name은 합치지 않도록 분기처리 할 것
 
-    2-a : 애초에 하나의 노드에 이웃하는 노드들이 동일한 name을 갖는 경우 하나의 id로 통일할 거니까 상관 없는거 아닌가? x, y값 필요 없지 않나?
-    -> 나중에 vizualize 할 때만 필요. 이때에도 단순히 새로 생성한 id들의 집합을 {새로 생성한 id : [묶인 ids]} 형태로 저장했다가 visualize 할 때만 보면 될 듯
-
 '''
 
 
@@ -72,6 +69,7 @@ def extractNoun(noun, synsDict, synNameCnter):
                 nInSynsDictList.append(synsDict[i])
             except:
                 continue
+                #noun이 아예 없는 경우?
 
     # synset에 해당되는 noun 중 언급이 많은 단어 선택
     name = ''
@@ -87,7 +85,7 @@ def extractNoun(noun, synsDict, synNameCnter):
 
 
 gList = []
-imgCnt = 1000
+imgCnt = 30
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
@@ -126,10 +124,10 @@ synNameCnter = Counter(synsetList)
 synsDict = {idx: name for idx, name in zip(originIdList, synsetList)}
 nonSynsDict = {name: value for name, value in zip(nonSysnIdList, nonSysnNameList)}
 
-for i in range(len(nonSysnNameList)):
+for i in range(len(nonSysnIdList)):
     try:
         sameNameId = get_key(originDict, nonSysnNameList[i])  # 1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우,
-        synsDict[str(nonSysnIdList[i])] = synsDict[sameNameId]
+        synsDict[str(nonSysnIdList[i])] = synsDict[str(sameNameId)]
 
     except:
         # 2. noun이 아닐 때 NLTK를 통해서 명사를 찾아 name으로 사용 가능한(synset으로 대체 가능한) noun 추출
@@ -139,8 +137,15 @@ for i in range(len(nonSysnNameList)):
 # #위에서 만든 synset Dict를 이용해 totalEmbedding 값을 만듦(fasttext)
 objectNameList = list(set(list(synsDict.values())))
 model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
+
+
+
+#print(totalEmbDict[synsDict['1058559']])
+
+
 with open("./data/totalEmbDict.pickle", "wb") as fw:
     pickle.dump(model, fw)
+
 # --------------------------- ^^^ synset Dict, Total Embedding(fasttext 값)^^^ ---------------------------
 
 for i in tqdm(range(imgCnt)):
@@ -201,10 +206,6 @@ for i in tqdm(range(imgCnt)):
     #위에서 제거된 값을 위해 변경
     objId = df_edge['objId'].tolist()
     subjId = df_edge['subjId'].tolist()
-    # totalEmbDict = {Name : Embedding}
-    # embDict = { 해당 이미지 내 objId : textEmbedding 값}
-    embList = [totalEmbDict[objNameList[idx]] for idx in range(len(objIdSet))]
-    embDict = {idx: emb for idx, emb in zip(objIdSet, embList)}
 
     neighUpp5 = []  # neighbors 5개 이상인 것들의 nodeId
     for nodeId in nodesList:
@@ -291,6 +292,17 @@ for i in tqdm(range(imgCnt)):
     df_new['objId'] = df_new['objId'].astype(int)
     df_new['subjId'] = df_new['subjId'].astype(int)
 
+    objIdSet = df_new['objId'].tolist() + df_new['subjId'].tolist()
+    #objIdSet = list(set(df_new['objId'].tolist() + df_new['subjId'].tolist()))
+    #objIdSet = gI.nodes()
+
+   # objNameList = df_new['objName'].tolist() + df_new['subjName'].tolist()
+
+    # totalEmbDict = {Name : Embedding}
+    # embDict = { 해당 이미지 내 objId : textEmbedding 값}
+    # embList = [totalEmbDict[synsDict[str(idx)]] for idx in objIdSet]
+    # embDict = {idx: emb for idx, emb in zip(objIdSet, embList)}
+
     gI = nx.from_pandas_edgelist(df_new, source='objId', target='subjId')
     for index, row in df_new.iterrows():
         gI.nodes[row['objId']]['name'] = row["objName"]  # name attr
@@ -300,6 +312,8 @@ for i in tqdm(range(imgCnt)):
         gI.nodes[row['subjId']]['originId'] = row['subjId']  # originId attr
 
     nodesList = sorted(list(gI.nodes))
+    embList = [totalEmbDict[synsDict[str(idx)]] for idx in nodesList]
+    embDict = {idx: emb for idx, emb in zip(nodesList, embList)}
 
     for idx in range(len(nodesList)):  # nodeId
         nodeId = nodesList[idx]
@@ -318,7 +332,7 @@ with open("./data/networkx_sifted.pickle", "wb") as fw:  # < node[nId]['attr'] =
 with open("./data/networkx_sifted.pickle", "rb") as fr:
     data = pickle.load(fr)
 
-gId = 289
+gId = 24
 gI = gList[gId]
 # print(data)
 print('data[gId] : ', gList[gId])
