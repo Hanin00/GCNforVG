@@ -36,12 +36,8 @@ object_id = relationships[0]['object_id']
 subject_id = relationships[0]['subject_id']
 
 
-
-
 with open('../data/objects.json') as file:  # open json file
     objects = json.load(file)
-
-
 
 
 print('objects / object_id / object_name')

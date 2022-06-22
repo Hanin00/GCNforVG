@@ -118,9 +118,9 @@ def FeatEmbeddPerTotal_model(objectNames):
         embedding.append(model.wv[i])
     # objectNames, Embedding 형태로 Dict 저장
     totalEmbDict = {name: value for name, value in zip(objectNames, embedding)}
-    embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
+    #embDict = {name: torch.FloatTensor(value) for name, value in zip(objectIds, embedding)}
 
-    return model,embDict
+    return model,totalEmbDict
 
 
 '''
@@ -248,11 +248,3 @@ def mkEdgelistPerRange(netx, num):
 # print(len(edgeList[0][0]))
 
 # print(len(edgeList[0][1]))
-
-
-
-
-model = FeatEmbeddPerTotal_model(['test','asdf','oh','yoon','suck',"banana",'apple','cherry','grape'])
-print(model.wv['test'])
-print(model.wv['asdf'])
-print(model.wv['band'])
