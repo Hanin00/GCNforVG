@@ -15,7 +15,6 @@ from collections import Counter
 import nltk
 from nltk.corpus import conll2000
 
-# todo - 0부터 시작하는 값으로 노드의 라벨을 변경하는 작업을 가장 마지막에 해야하는데
 # 먼저 변경하는 바람에 기존 originId를 이용해 Object의 위치를 알 수 없는 문제 발생 -> 해당 오류 정정 필요
 
 
@@ -87,12 +86,14 @@ def extractNoun(noun, synsDict, synNameCnter):
     return name
 
 
-gList = []
-imgCnt = 1000
 
+
+
+
+gList = []
+imgCnt = 10
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
-end = time.time()
 
 # --------------------------- vvv synset Dict, Total Embedding(fasttext 값) vvv ---------------------------
 '''synset Name Dict'''
@@ -131,8 +132,7 @@ nonSynsDict = {name: value for name, value in zip(nonSysnIdList, nonSysnNameList
 
 for i in range(len(nonSysnNameList)):
     try:
-        sameNameId = get_key(originDict, nonSysnNameList[
-            i])  # 1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우,
+        sameNameId = get_key(originDict, nonSysnNameList[i])  # 1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우,
         synsDict[str(nonSysnIdList[i])] = synsDict[sameNameId]
 
     except:
@@ -150,16 +150,6 @@ with open("./data/totalEmbDict.pickle", "wb") as fw:
 for i in tqdm(range(imgCnt)):
     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, i)
     objIdSet, objNameList = ut.AllNodes(data, i)
-
-    objIdList = []
-    objNameListSynset = []
-    for id in objIdSet:  # relationship으로 부터 반환하는 Alledge에서는 name값이 없어 AllNode를 통해 Dict를 만듦
-        try:
-            objNameListSynset.append(synsDict[str(id)])
-            objIdList.append(id)
-        except:
-            continue
-    relabelDict = {objName: i for i, objName in enumerate(objNameListSynset)}  # relabel을 위한 objId
     '''
         Object Name List를 기준으로 ReLabeling(String -> Int)
         Node List 생성
@@ -174,13 +164,13 @@ for i in tqdm(range(imgCnt)):
     '''
     # 이름이 중복되면 value 값 갱신됨
     # 이름 하나에 하나의 i 값만 갖는 dict
-
     # idNameDict = {ObjIdx : SynsetName} 를 만든기 위해 전체 objIdList를 사용
 
     attrNameList = []  # name attr  추가를 위한 코드
-    for kId in objIdList:
+    for kId in objIdSet:
         attrNameList.append(synsDict[str(kId)])
-    idNameDict = {str(idx): synsetName for idx, synsetName in zip(synsDict.keys(), attrNameList)}  # name attr  추가를 위한 코드
+    # 이미지 내 ObjIdx : NameList
+    idNameDict = {str(idx): synsetName for idx, synsetName in zip(objIdSet, attrNameList)}  # name attr  추가를 위한 코드
 
     newObjName = []  # name attr  추가를 위한 코드
     newSubjName = []  # name attr  추가를 위한 코드
@@ -211,21 +201,12 @@ for i in tqdm(range(imgCnt)):
     if recurRowId != 0:
         for idx in recurRowId:
             df_edge = df_edge.drop(index=idx)
-            # df_name = df_name.drop(index=idx)
 
     # synset에 없어 ''로 append 된 경우 dropna로 해당 행 삭제(해당 relationship 삭제)
     df_edge = df_edge.replace(r'', np.nan, regex=True)
     df_edge = df_edge.dropna()
-    # df_edge['objId'] = df_edge['objId'].astype(int)
-    # df_edge['subjId'] = df_edge['subjId'].astype(int)
-    # df_edge = pd.DataFrame({"objId": objId, "subjId": subjId, })
 
     gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
-
-
-    # for index, row in df_edge.iterrows():
-    #     gI.nodes[row['objId']]['name'] = row['newObjName']
-    #     gI.nodes[row['subjId']]['name'] = row['newSubjName']
 
     # --------- ^^^ Graph 생성, graph에 name, Origin ObjId를 attribute로 추가함 ^^^ ------------------
     # 자기 자신 참조하는 중복 제거, synset name 적용
@@ -239,13 +220,10 @@ for i in tqdm(range(imgCnt)):
 
     #위에서 제거된 값을 위해 변경
     objId = df_edge['objId'].tolist()
-
-
-
     subjId = df_edge['subjId'].tolist()
     # totalEmbDict = {Name : Embedding}
     # embDict = { 해당 이미지 내 objId : textEmbedding 값}
-    embList = [totalEmbDict[objNameList[i]] for i in range(len(objIdSet))]
+    embList = [totalEmbDict[objNameList[idx]] for idx in range(len(objIdSet))]
     embDict = {idx: emb for idx, emb in zip(objIdSet, embList)}
 
     neighUpp5 = []  # neighbors 5개 이상인 것들의 nodeId
@@ -269,9 +247,9 @@ for i in tqdm(range(imgCnt)):
         sameName = list(Counter(neiNames).keys())
         sameNums = list(Counter(neiNames).values())
         sameUpp5Idx = []
-        for i in range(len(sameNums)):
-            if sameNums[i] >= 5:
-                sameUpp5Idx.append(i)
+        for idx in range(len(sameNums)):
+            if sameNums[idx] >= 5:
+                sameUpp5Idx.append(idx)
 
         # delTargetnames : 한 노드의 이웃노드면서 5개 이상 중복되는 objectName List
         delTargetNames = []
@@ -300,35 +278,35 @@ for i in tqdm(range(imgCnt)):
     # todo 앞서 변경된 Id가 나중에 변경된 Id 값에 의해 왕창 늘어날 가능성 고려 및 코드 수정 필요
     # replaceDict = {delTargetIds : delTargetIds 중 변경 대상이 되는 Id}
     replaceDict = {}
-    for i in range(len(totalList)):
-        for j in range(len(totalList[i])):
-            replaceDict[str(totalList[i][j])] = fId[i]
+    for idx in range(len(totalList)):
+        for jIdx in range(len(totalList[idx])):
+            replaceDict[str(totalList[idx][jIdx])] = fId[idx]
 
     newObjList = []
     newSubjList = []
     if (len(replaceDict) != 0):
-        for i in objId:
+        for idx in objId:
             try:
-                newObjList.append(replaceDict[str(i)])  # 교체 대상인 경우 교체
+                newObjList.append(replaceDict[str(idx)])  # 교체 대상인 경우 교체
             except KeyError:
-                newObjList.append(str(i))  # 이웃 노드에서 중복이 아니어서 교체 대상이 아닌 경우 기존 Id
+                newObjList.append(str(idx))  # 이웃 노드에서 중복이 아니어서 교체 대상이 아닌 경우 기존 Id
 
-        for i in subjId:
+        for idx in subjId:
             try:
-                newSubjList.append(replaceDict[str(i)])  # 교체 대상인 경우 교체
+                newSubjList.append(replaceDict[str(idx)])  # 교체 대상인 경우 교체
             except KeyError:
-                newSubjList.append(str(i))  # 이웃 노드에서 중복이 아니어서 교체 대상이 아닌 경우 기존 Id
+                newSubjList.append(str(idx))  # 이웃 노드에서 중복이 아니어서 교체 대상이 아닌 경우 기존 Id
 
     if len(newObjList) != 0 :
         newObjId, newSubjId = newObjList, newSubjList
     else :
         newObjId, newSubjId = objId, subjId
     # id 값으로 name 호출 - obj / subj -> idtoName
-    newObjName = [idNameDict[str(i)] for i in newObjId]
-    newSubjName = [idNameDict[str(i)] for i in newSubjId]
+    newObjName = [idNameDict[str(idx)] for idx in newObjId]
+    newSubjName = [idNameDict[str(idx)] for idx in newSubjId]
     # #id 값으로 embedding 값 호출 - obj / subj -> Em
-    # newObjEmb = [embDict[i] for i in newObjId]
-    # newSubjEmb = [embDict[i] for i in newSubjId]
+    # newObjEmb = [embDict[idx] for idx in newObjId]
+    # newSubjEmb = [embDict[idx] for idx in newSubjId]
 
     df_new = pd.DataFrame({"objId": newObjId, "subjId": newSubjId,
                            "objName": newObjName, "subjName": newSubjName})
@@ -337,7 +315,15 @@ for i in tqdm(range(imgCnt)):
     df_new['objId'] = df_new['objId'].astype(int)
     df_new['subjId'] = df_new['subjId'].astype(int)
 
+    if (i == 1):
+        print('df_new')
+        print(df_new)
+        print('df_edge')
+        print(df_edge)
+
+
     gI = nx.from_pandas_edgelist(df_new, source='objId', target='subjId')
+    print("1 : ", gI)
     for index, row in df_new.iterrows():
         gI.nodes[row['objId']]['name'] = row["objName"]  # name attr
         gI.nodes[row['subjId']]['name'] = row['subjName']  # name attr
@@ -347,17 +333,20 @@ for i in tqdm(range(imgCnt)):
 
     nodesList = sorted(list(gI.nodes))
 
-    for i in range(len(nodesList)):  # nodeId
-        nodeId = nodesList[i]
+    print("2 : ", gI)
+
+    for idx in range(len(nodesList)):  # nodeId
+        nodeId = nodesList[idx]
         emb = embDict[nodeId]  # nodeId로 그래프 내 embDict(Id-Emb)에서 호출
         for j in range(3):  # Embedding 값은 [3,]인데, 원소 각각을 특징으로 node에 할당
             nx.set_node_attributes(gI, {nodeId: emb[j]}, "f" + str(j))
 
+    print("3 : ", gI)
     # node relabel - graph에서 노드 id 0부터 시작하도록 ---
-    listA = list(set(newObjId + newSubjId))
-    listIdx = range(len(listA))
-    dictIdx = {name: value for name, value in zip(listA, listIdx)}
+    dictIdx = {nodeId: idx for idx, nodeId in enumerate(nodesList)}
     gI = nx.relabel_nodes(gI, dictIdx)
+
+    print("4 : ", gI)
     gList.append(gI)
 
 
@@ -367,7 +356,7 @@ with open("./data/networkx_sifted.pickle", "wb") as fw:  # < node[nId]['attr'] =
 with open("./data/networkx_sifted.pickle", "rb") as fr:
     data = pickle.load(fr)
 
-gId = 3
+gId = 7
 gI = gList[gId]
 # print(data)
 print('data[gId] : ', gList[gId])
