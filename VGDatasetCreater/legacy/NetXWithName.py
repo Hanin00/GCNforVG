@@ -29,7 +29,7 @@ def get_key(val):
 gList = []
 imgCnt = 1000
 start = time.time()
-with open('./data/scene_graphs.json') as file:  # open json file
+with open('../data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 end = time.time()
 print(f"파일 읽는데 걸리는 시간 : {end - start:.5f} sec")  # 파일 읽는데 걸리는 시간 : 24.51298 sec
@@ -85,7 +85,7 @@ for imgId in tqdm(range(imgCnt)):
 objNamesList = list(set(objNamesList))
 
 totalEmbDict = ut.FeatEmbeddPerTotal(objNamesList)
-with open("./data/totalEmbDict.pickle", "wb") as fw:
+with open("../data/totalEmbDict.pickle", "wb") as fw:
     pickle.dump(totalEmbDict, fw)
 
 # with open("./data/totalEmbDict.pickle", "rb") as fr:

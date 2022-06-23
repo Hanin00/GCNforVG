@@ -27,7 +27,7 @@ except ImportError:
 
 with open('./data/scene_graphs.json') as file:  # open json file
     sceneJson = json.load(file)
-with open("./data/networkx_sifted.pickle", "rb") as fr:
+with open("./data/networkx_sifted_20.pickle", "rb") as fr:
     graphs = pickle.load(fr)
 
 
@@ -43,7 +43,7 @@ def makeObjectsInSubG(gId, G) :
         obj = objects[i]
         IdCoNameDict[object_id] = {'x': obj['x'], 'y': obj['y'], 'w': obj['w'], 'h': obj['h'], 'name': obj['names']}
 
-    nodes = G.nodes(data="objId")
+    nodes = G.nodes(data="originId")
     nodes = [n[1] for n in nodes]
     objectList = [IdCoNameDict[idx] for idx in nodes]
 
@@ -71,14 +71,16 @@ def visualize_regions(image, objectsList):
 
 
 #data load
-gId = 2
+gId = 0
 image = vg.get_image_data(gId+1)
+image = vg.get_image_data(image_id)
 G = graphs[gId]
 print(G)
 print(G.nodes(data=True))
-sys.exit()
+
 #visualize on plt
 fig = plt.gcf()
 fig.set_size_inches(18.5, 10.5)
 objectList = makeObjectsInSubG(gId, G)
+print(objectList)
 visualize_regions(image, objectList)
