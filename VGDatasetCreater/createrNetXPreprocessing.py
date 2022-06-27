@@ -96,7 +96,7 @@ def extractNoun(noun, synsDict, synNameCnter):
 
 
 gList = []
-imgCnt = 10000
+imgCnt = 1000
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
@@ -335,17 +335,17 @@ for i in tqdm(range(imgCnt)):
         nodeId = nodesList[idx]
         emb = embDict[nodeId]  # nodeId로 그래프 내 embDict(Id-Emb)에서 호출
         for j in range(3):  # Embedding 값은 [3,]인데, 원소 각각을 특징으로 node에 할당
-            nx.set_node_attributes(gI, {nodeId: emb[j]}, "f" + str(j))
+            nx.set_node_attributes(gI, {nodeId: float(emb[j])}, "f" + str(j))
     # node relabel - graph에서 노드 id 0부터 시작하도록 ---
     dictIdx = {nodeId: idx for idx, nodeId in enumerate(nodesList)}
     gI = nx.relabel_nodes(gI, dictIdx)
     gList.append(gI)
 
 
-with open("data/networkx_ver2_x10.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver2.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
-with open("data/networkx_ver2_x10.pickle", "rb") as fr:
+with open("data/networkx_ver2.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 gId = 0
@@ -354,6 +354,10 @@ image = vg.get_image_data(gId+1)
 # print(data)
 print('data[gId] : ', gList[gId])
 print('data[gId].node : ', gList[gId].nodes(data=True))
+
+with open("data/networkx_ver2.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+    pickle.dump(gList, fw)
+
 
 print(list(synsDict.values())[0])
 print('synsDict len : ', len(list(set(synsDict.values()))))
