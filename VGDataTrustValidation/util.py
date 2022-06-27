@@ -160,7 +160,7 @@ from tqdm import tqdm
 # scene_graph.json -> adjMatrix/FeatureMatrix 만들 때 오류나서 제외한 사진들이 있음
 # 해당 이미지를 제외하고 label 값을 추출해야해서 따로 처리함
 def siftCluster():
-    testFile = open('./data/cluster5000.txt', 'r')
+    testFile = open('../VGDatasetCreater/data/cluster5000.txt', 'r')
     readFile = testFile.readline()
     oldLabel = (readFile[0:-1].replace("'", '')).split(',')
     label = []
@@ -177,7 +177,7 @@ def siftCluster():
             break
 
     print(len(label))
-    with open("./data/clusterSifted1000.pickle", "wb") as fw:
+    with open("../VGDatasetCreater/data/clusterSifted1000.pickle", "wb") as fw:
         pickle.dump(label, fw)
 
 

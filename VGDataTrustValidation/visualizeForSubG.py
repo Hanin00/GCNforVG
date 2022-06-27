@@ -18,7 +18,7 @@ def vGphShow(nexG):
     plt.show()
 
 
-def graphShow(nexG):
+def graphShowId(nexG):
     #nx.draw(nexG, with_labels=True)
     relabelDict = {}
     for idx in nexG.nodes():
@@ -29,6 +29,16 @@ def graphShow(nexG):
     nx.draw(nexG,  with_labels=True)
     plt.show()
 
+def graphShowName(nexG):
+    #nx.draw(nexG, with_labels=True)
+    relabelDict = {}
+    for idx in nexG.nodes():
+        relabelDict[idx] = nexG.nodes[idx]['name']
+
+    nexG = nx.relabel_nodes(nexG, relabelDict)
+    plt.figure(figsize=[15, 7])
+    nx.draw(nexG,  with_labels=True)
+    plt.show()
 
 with open("./data/networkx_sifted.pickle", "rb") as fr:
     graphs = pickle.load(fr)
@@ -36,11 +46,13 @@ with open("./data/networkx_sifted.pickle", "rb") as fr:
 
 gId = 0
 G = graphs[gId]
+print(G)
 print(G.nodes(data=True))
 
 
 vGphShow(G)
-graphShow(G)
+graphShowId(G)
+graphShowName(G)
 
 
 

@@ -1,17 +1,9 @@
-from visual_genome import api as vg
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-from visual_genome import api as vg
-from PIL import Image as PIL_Image
-import requests
 import networkx as nx
 import json
-import sys
-import time
 import pandas as pd
-from collections import Counter
 import pickle
-import VGDatasetCreater.util as ut
+import VGDataTrustValidation.util as ut
 
 
 def imgShow(nexG):

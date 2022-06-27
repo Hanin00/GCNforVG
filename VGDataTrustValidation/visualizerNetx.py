@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from visual_genome import api as vg
 from PIL import Image as PIL_Image
+import networkx as nx
 import requests
 import json
 import pickle
@@ -17,7 +18,7 @@ import numpy
     Img(대상 그래프)에서 Bounding Box를 통해 확인
 '''
 
-with open("./data/networkx_sifted.pickle", "rb") as fr:
+with open("./data/networkx_ver1.pickle", "rb") as fr:
     graphs = pickle.load(fr)
 # a = numpy.mean([len(graph.nodes) for graph in graphs])
 # print(a)
@@ -28,7 +29,6 @@ except ImportError:
     print("Using BytesIO, since we're in Python3")
     #from io import StringIO #..
     from io import BytesIO as ReadBytes
-
 
 
 with open('./data/scene_graphs.json') as file:  # open json file
@@ -148,10 +148,16 @@ def patchOnImgLocal(imagepath, objectsList):
 
 
 #data load
-gId = 5
+gId = 0
 G = graphs[gId]
 
 image = vg.get_image_data(gId+1)
+
+
+plt.figure(figsize=[15, 7])
+nx.draw(G, with_labels=True)
+plt.show()
+
 print(G)
 print(G.nodes(data=True))
 

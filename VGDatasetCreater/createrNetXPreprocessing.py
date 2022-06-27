@@ -96,7 +96,7 @@ def extractNoun(noun, synsDict, synNameCnter):
 
 
 gList = []
-imgCnt = 1000
+imgCnt = 10000
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
@@ -342,10 +342,10 @@ for i in tqdm(range(imgCnt)):
     gList.append(gI)
 
 
-with open("data/networkx_ver2.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver2_x10.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
-with open("data/networkx_ver2.pickle", "rb") as fr:
+with open("data/networkx_ver2_x10.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 gId = 0
