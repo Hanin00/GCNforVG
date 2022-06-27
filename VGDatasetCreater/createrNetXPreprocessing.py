@@ -1,13 +1,28 @@
 import sys
 import numpy as np
-from VGDataTrustValidation import util as ut
+import util as ut
 import json
+import pickle
+import networkx as nx
 from collections import Counter
 from nltk.corpus import conll2000
+from tqdm import tqdm
+import pandas as pd
+from visual_genome import api as vg
+import matplotlib.pyplot as plt
+
+
+
+
+
 
 # 먼저 변경하는 바람에 기존 originId를 이용해 Object의 위치를 알 수 없는 문제 발생 -> 해당 오류 정정 필요
 
-
+#
+# conllDict = {word: tag for word, tag in conll2000.tagged_words(tagset='universal')}
+# print(conllDict['ostirch'])
+#
+# sys.exit()
 '''
     objId를 기준으로 그래프를 생성하되, 
     1. 단일 node에 이웃 노드 이름이 5개 이상 겹치는 경우, 이름이 같은 오브젝트들을 모두 하나의 node로 묶고 오브젝트를 삭제함
@@ -17,13 +32,11 @@ from nltk.corpus import conll2000
 
 '''
 
-
 def get_key(dict, val):
     for key, value in dict.items():
         if val == value:
             return key
     return "key doesn't exist"
-
 
 def blank_nan(x):
     if x == '':
@@ -38,54 +51,52 @@ def blank_nan(x):
         -> NLTK로 분할한 noun들이 기존 synset이 아닌 경우 전체를 통째로 synset으로 만들기
 '''
 
-
 def extractNoun(noun, synsDict, synNameCnter):
     conllDict = {word: tag for word, tag in conll2000.tagged_words(tagset='universal')}
     words = noun.split(' ')
-    if(noun == 'lamp post') :
-        print('first hit')
+
+    # synset에 해당되는 noun 중 언급이 많은 단어 선택
+    name = ''
+    cnt = 0
     # noun 판별
     nouns = []
     for i in words:
         try:
             if conllDict[i] == 'NOUN':
                 nouns.append(i)
-                if (noun == 'lamp post'):
-                    print('1.__ hit')
         except:
-            print('1 : ',i)
-            if (noun == 'lamp post'):
-                print('1.hit')
             continue
+
     # synset에 해당되는 noun이 있는지 판별
     nInSynsDictList = []
-    if len(nouns) != 0:
+
+    if len(nouns) != 0: #nouns이 있음
         for i in nouns:
             try:
                 nInSynsDictList.append(synsDict[i])
-                if (noun == 'lamp post'):
-                    print('second hit')
             except:
-                print('2 : ', i)
                 continue
                 #noun이 아예 없는 경우?
 
-    # synset에 해당되는 noun 중 언급이 많은 단어 선택
-    name = ''
-    cnt = 0
-    if len(nInSynsDictList) != 0:
-        for i in nInSynsDictList:
-            if cnt < synNameCnter[i]:
-                name = i
-                cnt = synNameCnter[i]
+        if len(nInSynsDictList) != 0:
+            for i in nInSynsDictList:
+                if cnt < synNameCnter[i]:
+                    name = i
+                    cnt = synNameCnter[i]
+        else:
+            if len(nouns) != 0 :
+                name = "_".join(sorted(nouns))
+
     else:
-        name = "_".join(sorted(nouns))
-        print('names: ', name)
+        name = "_".join(sorted(words))
+
     return name
 
 
+
+
 gList = []
-imgCnt = 10
+imgCnt = 1000
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
@@ -112,8 +123,10 @@ for ImgId in range(imgCnt):
             nonSysnNameList.append(imageDescriptions[j]['names'][0])
             nonSysnIdList.append(str(oId))
 
-print('originIdList : ',originIdList)
 synNameCnter = Counter(synsetList)
+
+
+
 '''   
     Synset Naming
     1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우, objId로 synsDict에서 synsetName을 찾음
@@ -141,7 +154,6 @@ for i in range(len(nonSysnIdList)):
 objectNameList = list(set(list(synsDict.values())))
 model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
 
-sys.exit()
 
 
 #print(totalEmbDict[synsDict['1058559']])
@@ -187,8 +199,6 @@ for i in tqdm(range(imgCnt)):
     for j in range(len(objId)):
         if objId[j] == subjId[j]:
             recurRowId.append(j)
-
-
 
     df_edge = pd.DataFrame(
         {"objId": objId, "subjId": subjId, "newObjName": newObjName, "newSubjName": newSubjName, })
@@ -332,13 +342,13 @@ for i in tqdm(range(imgCnt)):
     gList.append(gI)
 
 
-with open("data/networkx_sifted.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver2.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
-with open("data/networkx_sifted.pickle", "rb") as fr:
+with open("data/networkx_ver2.pickle", "rb") as fr:
     data = pickle.load(fr)
 
-gId = 24
+gId = 0
 gI = gList[gId]
 image = vg.get_image_data(gId+1)
 # print(data)
