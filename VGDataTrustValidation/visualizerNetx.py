@@ -51,7 +51,9 @@ def makeObjectsInSubG(gId, G) :
 
     nodes = G.nodes(data="originId")
     nodes = [n[1] for n in nodes]
-    objectList = [IdCoNameDict[idx] for idx in nodes]  #Graph 의 node(=Object)와 동일한 Id 있는 경우 호출
+    objectList = []
+    for idx in nodes :
+        objectList+= [IdCoNameDict[idx]]
 
     return objectList
 
@@ -89,11 +91,11 @@ def mkDenseObjInSubG(gId, G) :
      denseNode]
 
     denseNodeList = []
-    denseNodeList.append(IdCoNameDict[objects[idx]['object_id']] for idx in denseNode)
+    [denseNodeList.append(IdCoNameDict[objects[idx]['object_id']]) for idx in denseNode]
 
 
 
-    return denseNode,objectList
+    return denseNodeList,objectList
 
 
 
@@ -103,7 +105,7 @@ def patchOnImgApi(image, objectsList, denseNode):
     img = PIL_Image.open(ReadBytes(response.content))
     plt.imshow(img)
     ax = plt.gca()
-    if denseNode != 0 :
+    if len(denseNode) !=0 :
         for object in denseNode:
             ax.add_patch(Rectangle((object['x'], object['y']),
                                    object['w'], object['h'],
@@ -146,7 +148,7 @@ def patchOnImgLocal(imagepath, objectsList):
 
 
 #data load
-gId = 644
+gId = 5
 image = vg.get_image_data(gId+1)
 G = graphs[gId]
 print(G)
@@ -158,7 +160,8 @@ fig.set_size_inches(18.5, 10.5)
 denseNode = []
 objectList = makeObjectsInSubG(gId, G)
 #denseNode, objectList = mkDenseObjInSubG(gId, G)
-#objectList = mkDenseObjInSubG(gId, G)
+
+
 
 imagepath = './data/python.png'
 
