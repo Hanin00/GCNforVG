@@ -1,18 +1,8 @@
 import sys
 import numpy as np
-import pandas as pd
-import torch
-import csv
-import torch_geometric.utils
-import util as ut
-import networkx as nx
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-import time
+from VGDataTrustValidation import util as ut
 import json
-import pickle
 from collections import Counter
-import nltk
 from nltk.corpus import conll2000
 
 # 먼저 변경하는 바람에 기존 originId를 이용해 Object의 위치를 알 수 없는 문제 발생 -> 해당 오류 정정 필요
@@ -51,15 +41,21 @@ def blank_nan(x):
 
 def extractNoun(noun, synsDict, synNameCnter):
     conllDict = {word: tag for word, tag in conll2000.tagged_words(tagset='universal')}
-
     words = noun.split(' ')
+    if(noun == 'lamp post') :
+        print('first hit')
     # noun 판별
     nouns = []
     for i in words:
         try:
             if conllDict[i] == 'NOUN':
                 nouns.append(i)
+                if (noun == 'lamp post'):
+                    print('1.__ hit')
         except:
+            print('1 : ',i)
+            if (noun == 'lamp post'):
+                print('1.hit')
             continue
     # synset에 해당되는 noun이 있는지 판별
     nInSynsDictList = []
@@ -67,7 +63,10 @@ def extractNoun(noun, synsDict, synNameCnter):
         for i in nouns:
             try:
                 nInSynsDictList.append(synsDict[i])
+                if (noun == 'lamp post'):
+                    print('second hit')
             except:
+                print('2 : ', i)
                 continue
                 #noun이 아예 없는 경우?
 
@@ -81,11 +80,12 @@ def extractNoun(noun, synsDict, synNameCnter):
                 cnt = synNameCnter[i]
     else:
         name = "_".join(sorted(nouns))
+        print('names: ', name)
     return name
 
 
 gList = []
-imgCnt = 1000
+imgCnt = 10
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
@@ -112,6 +112,7 @@ for ImgId in range(imgCnt):
             nonSysnNameList.append(imageDescriptions[j]['names'][0])
             nonSysnIdList.append(str(oId))
 
+print('originIdList : ',originIdList)
 synNameCnter = Counter(synsetList)
 '''   
     Synset Naming
@@ -121,8 +122,10 @@ synNameCnter = Counter(synsetList)
     없는 경우, 2로 넘어감
 '''
 
+
 synsDict = {idx: name for idx, name in zip(originIdList, synsetList)}
 nonSynsDict = {name: value for name, value in zip(nonSysnIdList, nonSysnNameList)}
+
 
 for i in range(len(nonSysnIdList)):
     try:
@@ -138,6 +141,7 @@ for i in range(len(nonSysnIdList)):
 objectNameList = list(set(list(synsDict.values())))
 model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
 
+sys.exit()
 
 
 #print(totalEmbDict[synsDict['1058559']])
@@ -183,6 +187,8 @@ for i in tqdm(range(imgCnt)):
     for j in range(len(objId)):
         if objId[j] == subjId[j]:
             recurRowId.append(j)
+
+
 
     df_edge = pd.DataFrame(
         {"objId": objId, "subjId": subjId, "newObjName": newObjName, "newSubjName": newSubjName, })
@@ -334,6 +340,7 @@ with open("data/networkx_sifted.pickle", "rb") as fr:
 
 gId = 24
 gI = gList[gId]
+image = vg.get_image_data(gId+1)
 # print(data)
 print('data[gId] : ', gList[gId])
 print('data[gId].node : ', gList[gId].nodes(data=True))
