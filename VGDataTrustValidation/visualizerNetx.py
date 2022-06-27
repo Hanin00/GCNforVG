@@ -149,8 +149,9 @@ def patchOnImgLocal(imagepath, objectsList):
 
 #data load
 gId = 5
-image = vg.get_image_data(gId+1)
 G = graphs[gId]
+
+image = vg.get_image_data(gId+1)
 print(G)
 print(G.nodes(data=True))
 
