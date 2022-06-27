@@ -14,10 +14,10 @@ import pickle
 import VGDatasetCreater.util as ut
 
 
-
 def imgShow(nexG):
     nx.draw(nexG, with_labels=True)
     plt.show()
+
 
 #
 # try:
