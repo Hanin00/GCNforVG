@@ -19,32 +19,38 @@ import matplotlib.pyplot as plt
 
 '''
 
-with open("data/test_100.pickle", "rb") as fr:
+with open("data/networkx_ver2.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 print(len(data[0].nodes()))
 print(len(data[0].nodes()))
 
 
-imgCnt = 100
+imgCnt = 300
 
-def mkCnt(imgCnt,data ) :
+def mkCnt(imgCnt,data) :
     nodeNameList = []
+    cnt = 0
     for i in range(imgCnt) :
         nodeList = data[i].nodes(data = 'name')
         nodeNameList += [node[1] for node in nodeList]
+        if nodeNameList.count('man')!= 0 :
+            cnt += nodeNameList.count('man')
 
+
+
+
+
+    print('cnt : ',cnt)
     synsetCnt = Counter(nodeNameList)
-    print(len(list(set(nodeNameList))))
     return synsetCnt
 
 
 synsetCnt = mkCnt(imgCnt, data)
+print(type(synsetCnt))
+print(synsetCnt['man'])
+#lista = list(synsetCnt.most_common())
 
-print(synsetCnt['Ground'])
-print(synsetCnt['paper'])
-lista = list(synsetCnt.most_common())
-print(len(lista))
 
 
 # with open("data/nx_v2_classinfo_10000.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)

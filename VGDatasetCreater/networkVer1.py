@@ -71,7 +71,7 @@ def extractNoun(noun, synsDict, synNameCnter):
 
 
 gList = []
-imgCnt = 1
+imgCnt = 1000
 start = time.time()
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
@@ -88,7 +88,8 @@ nonSysnIdList = []
 
 originDict = {}
 
-for ImgId in range(imgCnt):
+#for ImgId in range(imgCnt):
+for ImgId in range(len(data)):
     imageDescriptions = data[ImgId]["objects"]
     for j in range(len(imageDescriptions)):  # 이미지의 object 개수만큼 반복
         oId = imageDescriptions[j]['object_id']
@@ -112,8 +113,7 @@ synNameCnter = Counter(synsetList)
 '''
 
 synsDict = {idx: name for idx, name in zip(originIdList, synsetList)}
-nonSynsDict = {name: value for name,
-                               value in zip(nonSysnIdList, nonSysnNameList)}
+nonSynsDict = {name: value for name, value in zip(nonSysnIdList, nonSysnNameList)}
 
 for i in range(len(nonSysnNameList)):
     try:
@@ -126,6 +126,7 @@ for i in range(len(nonSysnNameList)):
         name = extractNoun(nonSysnNameList[i], synsDict, synNameCnter)
         synsDict[nonSysnIdList[i]] = name
 
+
 objNamesList = []
 newObjIdListforSynset = []
 for imgId in tqdm(range(imgCnt)):
@@ -137,6 +138,7 @@ for imgId in tqdm(range(imgCnt)):
             newObjIdListforSynset.append(id)
         except:
             continue
+
 totalEmbDict = ut.FeatEmbeddPerTotal(list(set(objNamesList)))
 
 for i in tqdm(range(imgCnt)):
@@ -170,8 +172,7 @@ for i in tqdm(range(imgCnt)):
     '''
     # 이름이 중복되면 value 값 갱신됨
     # 이름 하나에 하나의 i 값만 갖는 dict
-    relabelDict = {objName: i for i, objName in zip(objIdList,
-                                                    objNameListSynset)}  # relabel을 위한 objId
+    relabelDict = {objName: i for i, objName in zip(objIdList, objNameListSynset)}  # relabel을 위한 objId
     newObjIdList = []
     attrNameList = []  # name attr  추가를 위한 코드
     for kId in objIdList:

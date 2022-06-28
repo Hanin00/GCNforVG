@@ -157,13 +157,21 @@ model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
 
 
 #print(totalEmbDict[synsDict['1058559']])
+with open("./data/synsetDict_1000.pickle", "wb") as fw:
+    pickle.dump(synsDict, fw)
+
+sys.exit()
 
 
 with open("./data/totalEmbDict.pickle", "wb") as fw:
     pickle.dump(model, fw)
 
 # --------------------------- ^^^ synset Dict, Total Embedding(fasttext 값)^^^ ---------------------------
+with open('./data/scene_graphs.json') as file:  # open json file
+    data = json.load(file)
 
+data = data[1000:1200]
+imgCnt = 200
 for i in tqdm(range(imgCnt)):
     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, i)
     objIdSet, objNameList = ut.AllNodes(data, i)
@@ -342,10 +350,11 @@ for i in tqdm(range(imgCnt)):
     gList.append(gI)
 
 
-with open("data/networkx_ver2.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+
+with open("data/networkx_ver2_x10.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
-with open("data/networkx_ver2.pickle", "rb") as fr:
+with open("data/networkx_ver2_x10.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 gId = 0
@@ -355,7 +364,7 @@ image = vg.get_image_data(gId+1)
 print('data[gId] : ', gList[gId])
 print('data[gId].node : ', gList[gId].nodes(data=True))
 
-with open("data/networkx_ver2.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver2_x10.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
 
