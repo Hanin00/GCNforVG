@@ -149,9 +149,9 @@ for i in range(len(nonSysnIdList)):
 
 #print(totalEmbDict[synsDict['1058559']])
 
+with open("./data/synsetDict_10000.pickle", "wb") as fw:
+    pickle.dump(synsDict, fw)
 
-with open("data/synsetDict_10000.pickle", "rb") as fr:
-    synsDict = pickle.load(fr)
 
 # #위에서 만든 synset Dict를 이용해 totalEmbedding 값을 만듦(fasttext)
 objectNameList = list(set(list(synsDict.values())))

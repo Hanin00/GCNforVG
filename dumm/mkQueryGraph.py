@@ -28,12 +28,12 @@ from nltk.corpus import conll2000
 #     n200G = pickle.load(fr)
 #
 #
-# for i in range(len(n200G)) :
-#     names = [row[1] for row in n200G[i].nodes(data='name')]
-#     if 'grass' in names :
-#         print(n200G[i].nodes(data=True))
-#         break
-#
+for i in range(len(n200G)) :
+    names = [row[1] for row in n200G[i].nodes(data='name')]
+    if 'grass' in names :
+        print(n200G[i].nodes(data=True))
+        break
+
 
 
 # with open("data/synsetDict_1000.pickle", "rb") as fr:
