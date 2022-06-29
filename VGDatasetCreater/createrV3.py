@@ -85,7 +85,7 @@ def extractNoun(noun, synsDict, synNameCnter):
 
     else:
         name = ''
-        name = "_".join(sorted(words))
+       # name = "_".join(sorted(words))
 
     return name
 
@@ -93,7 +93,7 @@ def extractNoun(noun, synsDict, synNameCnter):
 
 
 gList = []
-imgCnt = 10000
+imgCnt = 1000
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
@@ -150,7 +150,7 @@ for i in range(len(nonSysnIdList)):
 
 #print(totalEmbDict[synsDict['1058559']])
 
-with open("./data/synsetDict_10000.pickle", "wb") as fw:
+with open("./data/synsetDictV3.pickle", "wb") as fw:
     pickle.dump(synsDict, fw)
 
 
@@ -159,7 +159,7 @@ objectNameList = list(set(list(synsDict.values())))
 model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
 
 
-with open("./data/totalEmbDict10000.pickle", "wb") as fw:
+with open("./data/totalEmbDictV3.pickle", "wb") as fw:
     pickle.dump(totalEmbDict, fw)
 
 # with open("data/totalEmbDict.pickle", "rb") as fr:
@@ -215,6 +215,8 @@ for i in tqdm(range(imgCnt)):
     if recurRowId != 0:
         for idx in recurRowId:
             df_edge = df_edge.drop(index=idx)
+    df_edge = df_edge.replace(r'', np.nan, regex=True)
+    df_edge = df_edge.dropna()
 
 
     gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
@@ -353,20 +355,30 @@ for i in tqdm(range(imgCnt)):
 
 
 
-with open("data/networkx_ver2_10000.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver3.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
-with open("data/networkx_ver2_10000.pickle", "rb") as fr:
+with open("data/networkx_ver3.pickle", "rb") as fr:
     data = pickle.load(fr)
 
-gId = 0
+gId = 869
 gI = gList[gId]
 image = vg.get_image_data(gId+1)
 # print(data)
 print('data[gId] : ', gList[gId])
 print('data[gId].node : ', gList[gId].nodes(data=True))
 
-with open("data/networkx_ver2_10000.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+
+gId = 870
+gI = gList[gId]
+image = vg.get_image_data(gId+1)
+# print(data)
+print('data[gId] : ', gList[gId])
+print('data[gId].node : ', gList[gId].nodes(data=True))
+
+
+
+with open("data/networkx_ver3.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
 

@@ -24,20 +24,35 @@ from nltk.corpus import conll2000
     특징값 : synset dict와 textEmbedding 이용해서 만들면 됨    
 '''
 
-# with open("data/networkx_ver200.pickle", "rb") as fr:
-#     n200G = pickle.load(fr)
-#
-#
-for i in range(len(n200G)) :
-    names = [row[1] for row in n200G[i].nodes(data='name')]
-    if 'grass' in names :
-        print(n200G[i].nodes(data=True))
+with open("data/networkx_ver2.pickle", "rb") as fr:
+    ver2G = pickle.load(fr)
+
+
+for i in range(len(ver2G)) :
+    names = [row[1] for row in ver2G[i].nodes(data='name')]
+    if '1831' in names :
+        print(i)
+        print(ver2G[i].nodes(data=True))
         break
 
+def get_key(dict, val):
+    for key, value in dict.items():
+        if val == value:
+            return key
+    return "key doesn't exist"
+
+with open("data/synsetDict_1000.pickle", "rb") as fr:
+     synsDict = pickle.load(fr)
+
+print(get_key(synsDict, '1831'))
+
+print(synsDict["1831"])
 
 
-# with open("data/synsetDict_1000.pickle", "rb") as fr:
-#     synsDict = pickle.load(fr)
+exit()
+
+
+
 #
 # n1000 = synsDict.values()
 # cnt1000 = Counter(n1000)
