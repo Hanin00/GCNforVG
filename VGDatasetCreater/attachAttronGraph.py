@@ -36,7 +36,6 @@ for g in range(len(targetGList)) :
         graph.nodes[j]["originId"] = kDict[j]
     nGList.append(graph)
 
-
 with open("data/networkx_ver1.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(nGList, fw)
 

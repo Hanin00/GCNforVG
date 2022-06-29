@@ -12,10 +12,6 @@ from visual_genome import api as vg
 import matplotlib.pyplot as plt
 
 
-
-
-
-
 # 먼저 변경하는 바람에 기존 originId를 이용해 Object의 위치를 알 수 없는 문제 발생 -> 해당 오류 정정 필요
 
 #
@@ -127,7 +123,7 @@ synNameCnter = Counter(synsetList)
 
 
 
-'''   
+'''
     Synset Naming
     1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우, objId로 synsDict에서 synsetName을 찾음
     2. nonSynsetName/Id에서 해당 원소를 제외하고, synsDict에 추가함(objId : objName(synset))
@@ -150,28 +146,32 @@ for i in range(len(nonSysnIdList)):
         name = extractNoun(nonSysnNameList[i], synsDict, synNameCnter)
         synsDict[str(nonSysnIdList[i])] = name
 
+
+#print(totalEmbDict[synsDict['1058559']])
+
+
+with open("data/synsetDict_10000.pickle", "rb") as fr:
+    synsDict = pickle.load(fr)
+
 # #위에서 만든 synset Dict를 이용해 totalEmbedding 값을 만듦(fasttext)
 objectNameList = list(set(list(synsDict.values())))
 model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
 
 
+with open("./data/totalEmbDict10000.pickle", "wb") as fw:
+    pickle.dump(totalEmbDict, fw)
 
-#print(totalEmbDict[synsDict['1058559']])
-with open("./data/synsetDict_1000.pickle", "wb") as fw:
-    pickle.dump(synsDict, fw)
-
-sys.exit()
+# with open("data/totalEmbDict.pickle", "rb") as fr:
+#     model = pickle.load(fr)
 
 
-with open("./data/totalEmbDict.pickle", "wb") as fw:
-    pickle.dump(model, fw)
 
 # --------------------------- ^^^ synset Dict, Total Embedding(fasttext 값)^^^ ---------------------------
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
-data = data[1000:1200]
-imgCnt = 200
+
+imgCnt = 10000
 for i in tqdm(range(imgCnt)):
     objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, i)
     objIdSet, objNameList = ut.AllNodes(data, i)
@@ -211,12 +211,15 @@ for i in tqdm(range(imgCnt)):
     df_edge = pd.DataFrame(
         {"objId": objId, "subjId": subjId, "newObjName": newObjName, "newSubjName": newSubjName, })
 
+
     # 자기 자신을 참조하는 노드의 relationship 삭제
     if recurRowId != 0:
         for idx in recurRowId:
             df_edge = df_edge.drop(index=idx)
 
+
     gI = nx.from_pandas_edgelist(df_edge, source='objId', target='subjId')
+
 
     # --------- ^^^ Graph 생성, graph에 name, Origin ObjId를 attribute로 추가함 ^^^ ------------------
     #                   자기 자신 참조하는 중복 제거, synset name 적용
@@ -274,7 +277,7 @@ for i in tqdm(range(imgCnt)):
             for name in delTargetNames:
                 for key, value in idNameDict.items():
                     if name == value:
-                        delTargetIds.append(key)
+                        delTargetIds.append(keyF)
 
             delTargetIds = sorted(delTargetIds)
             fId.append(delTargetIds[0])
@@ -351,10 +354,10 @@ for i in tqdm(range(imgCnt)):
 
 
 
-with open("data/networkx_ver2_x10.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver2_10000.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
-with open("data/networkx_ver2_x10.pickle", "rb") as fr:
+with open("data/networkx_ver2_10000.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 gId = 0
@@ -364,7 +367,7 @@ image = vg.get_image_data(gId+1)
 print('data[gId] : ', gList[gId])
 print('data[gId].node : ', gList[gId].nodes(data=True))
 
-with open("data/networkx_ver2_x10.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver2_10000.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
 
