@@ -15,6 +15,15 @@ import pickle
 import nltk
 from nltk.corpus import conll2000
 
+
+def vGphShow(nexG):
+    #nx.draw(nexG, with_labels=True)
+
+    plt.figure(figsize=[15, 7])
+    nx.draw(nexG,  with_labels=True)
+    plt.show()
+
+
 # with open("data/networkx_ver2.pickle", "rb") as fr:
 #     net200 = pickle.load(fr)
 
@@ -26,6 +35,11 @@ from nltk.corpus import conll2000
 
 with open("data/networkx_ver2.pickle", "rb") as fr:
     ver2G = pickle.load(fr)
+
+
+vGphShow(ver2G[869])
+sys.exit()
+
 
 
 for i in range(len(ver2G)) :
@@ -62,12 +76,6 @@ exit()
 # df = pd.DataFrame(tu, columns=['Name', 'cnt'])
 # print(df)
 
-def vGphShow(nexG):
-    #nx.draw(nexG, with_labels=True)
-
-    plt.figure(figsize=[15, 7])
-    nx.draw(nexG,  with_labels=True)
-    plt.show()
 
 with open("data/networkx_ver1.pickle", "rb") as fr:
     net200 = pickle.load(fr)

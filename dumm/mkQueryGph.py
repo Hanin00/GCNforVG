@@ -26,9 +26,22 @@ from nltk.corpus import conll2000
 #
 #
 
-# with open("data/networkx_ver2.pickle", "rb") as fr:
-#     ver2G = pickle.load(fr)
-#
+with open("data/networkx_ver2.pickle", "rb") as fr:
+    ver2G = pickle.load(fr)
+
+
+gI =ver2G[869]
+
+print(gI)
+print(gI.nodes(data='name'))
+
+plt.figure(figsize=[15, 7])
+nx.draw(gI, with_labels=True)
+plt.show()
+
+sys.exit()
+
+
 #
 # for i in range(len(ver2G)) :
 #     names = [row[1] for row in ver2G[i].nodes(data='name')]
