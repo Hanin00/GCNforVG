@@ -58,20 +58,8 @@ def get_key(dict, val):
 with open("data/synsetDict_1000.pickle", "rb") as fr:
      synsDict = pickle.load(fr)
 
-print(get_key(synsDict, '1831'))
-
-print(synsDict["1831"])
 
 
-exit()
-
-
-
-#
-# n1000 = synsDict.values()
-# cnt1000 = Counter(n1000)
-# tu = cnt1000.most_common(100)
-#
 # pd.set_option('display.max_rows',None)
 # df = pd.DataFrame(tu, columns=['Name', 'cnt'])
 # print(df)
