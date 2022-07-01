@@ -10,6 +10,8 @@ from tqdm import tqdm
 import pandas as pd
 from visual_genome import api as vg
 import matplotlib.pyplot as plt
+import time
+
 
 
 # 먼저 변경하는 바람에 기존 originId를 이용해 Object의 위치를 알 수 없는 문제 발생 -> 해당 오류 정정 필요
@@ -35,6 +37,7 @@ def get_key(dict, val):
     return "key doesn't exist"
 
 def blank_nan(x):
+
     if x == '':
         x = np.nan
     return x
@@ -90,10 +93,8 @@ def extractNoun(noun, synsDict, synNameCnter):
     return name
 
 
-
-
 gList = []
-imgCnt = 1000
+imgCnt = 100000
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
@@ -123,7 +124,6 @@ for ImgId in range(imgCnt):
 synNameCnter = Counter(synsetList)
 
 
-
 '''
     Synset Naming
     1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우, objId로 synsDict에서 synsetName을 찾음
@@ -148,9 +148,7 @@ for i in range(len(nonSysnIdList)):
         synsDict[str(nonSysnIdList[i])] = name
 
 
-#print(totalEmbDict[synsDict['1058559']])
-
-with open("./data/synsetDictV3.pickle", "wb") as fw:
+with open("./data/synsetDictV3_x100.pickle", "wb") as fw:
     pickle.dump(synsDict, fw)
 
 
@@ -159,7 +157,7 @@ objectNameList = list(set(list(synsDict.values())))
 model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
 
 
-with open("./data/totalEmbDictV3.pickle", "wb") as fw:
+with open("./data/totalEmbDictV3_x100.pickle", "wb") as fw:
     pickle.dump(totalEmbDict, fw)
 
 # with open("data/totalEmbDict.pickle", "rb") as fr:
@@ -321,15 +319,6 @@ for i in tqdm(range(imgCnt)):
     df_new['subjId'] = df_new['subjId'].astype(int)
 
     objIdSet = df_new['objId'].tolist() + df_new['subjId'].tolist()
-    #objIdSet = list(set(df_new['objId'].tolist() + df_new['subjId'].tolist()))
-    #objIdSet = gI.nodes()
-
-   # objNameList = df_new['objName'].tolist() + df_new['subjName'].tolist()
-
-    # totalEmbDict = {Name : Embedding}
-    # embDict = { 해당 이미지 내 objId : textEmbedding 값}
-    # embList = [totalEmbDict[synsDict[str(idx)]] for idx in objIdSet]
-    # embDict = {idx: emb for idx, emb in zip(objIdSet, embList)}
 
     gI = nx.from_pandas_edgelist(df_new, source='objId', target='subjId')
     for index, row in df_new.iterrows():
@@ -355,10 +344,10 @@ for i in tqdm(range(imgCnt)):
 
 
 
-with open("data/networkx_ver3.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+with open("data/networkx_ver3_x100.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
     pickle.dump(gList, fw)
 
-with open("data/networkx_ver3.pickle", "rb") as fr:
+with open("data/networkx_ver3_x100.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 gId = 869
@@ -378,8 +367,8 @@ print('data[gId].node : ', gList[gId].nodes(data=True))
 
 
 
-with open("data/networkx_ver3.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
-    pickle.dump(gList, fw)
+# with open("data/networkx_ver3_x100.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)
+#     pickle.dump(gList, fw)
 
 # with open("data/networkx_ver3.pickle", "rb") as fr:
 #     ver3G = pickle.load(fr)

@@ -92,7 +92,7 @@ def FeatEmbeddPerTotal(objectNames):
     model = FastText()
     #vocab가 너무 적은 경우(5개 정도로) 정상 작동하지 않아 id 242의 objectName을 임의로 삽입함 -> Top Object를 넣는 게 더 나을 것 같기두..
     model.build_vocab(objectNames)
-    model = FastText(objectNames, vector_size=3, workers=4, sg=1, word_ngrams=1)
+    model = FastText(objectNames, vector_size=1, workers=4, sg=1, word_ngrams=1)
     #model.build_vocab(objectNames)
     embedding = []
     for i in objectNames: #objName 개수만큼만 반복하니까 vocab에 추가해 준 거 신경 X. Id:Embedding 값으로 dict 생성

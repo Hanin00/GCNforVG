@@ -41,7 +41,7 @@ def blank_nan(x):
 
 
 '''
-    Synset Naming
+    Synset Naming`
     2. noun이 아닐 때 NLTK를 통해서 명사를 찾아 name으로 사용 가능한(synset으로 대체 가능한) noun 추출
         -> noun이 두 개 일 경우 기존 synset List에서 가장 많이 사용되는 단어를 사용하고, 개수가 일치 할 경우 [0]의 단어를 name으로 함
         -> NLTK로 분할한 noun들이 기존 synset이 아닌 경우 전체를 통째로 synset으로 만들기
@@ -82,7 +82,6 @@ def extractNoun(noun, synsDict, synNameCnter):
         else:
             if len(nouns) != 0 :
                 name = "_".join(sorted(nouns))
-
     else:
         name = ''
         name = "_".join(sorted(words))
