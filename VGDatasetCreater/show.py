@@ -10,8 +10,6 @@ import time
 import numpy
 import pandas as pd
 
-
-
 with open('./data/scene_graphs.json') as file:  # open json file
      data = json.load(file)
 

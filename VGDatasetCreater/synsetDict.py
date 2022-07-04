@@ -29,6 +29,33 @@ import time
 '''
 
 
+with open("data/synsetDictV3_x100.pickle", "rb") as fr:
+    synsDict = pickle.load(fr)
+
+
+print(len(list(set(synsDict.values()))))
+
+synsDictCnt = Counter(synsDict.values())
+print(synsDictCnt.most_common(10))
+print(list(synsDictCnt.most_common())[-10:])
+
+with open("data/v3_x100/v3_x1000.pickle", "rb") as fr:
+    v301Gs = pickle.load(fr)
+
+gph = v301Gs[0]
+print(gph)
+print(gph.nodes(data=True))
+
+
+
+sys.exit()
+
+
+
+
+
+
+
 def get_key(dict, val):
     for key, value in dict.items():
         if val == value:
@@ -318,8 +345,7 @@ for i in tqdm(range(imgCnt)):
     for idx in range(len(nodesList)):  # nodeId
         nodeId = nodesList[idx]
         emb = embDict[nodeId]  # nodeId로 그래프 내 embDict(Id-Emb)에서 호출
-        for j in range(3):  # Embedding 값은 [3,]인데, 원소 각각을 특징으로 node에 할당
-            nx.set_node_attributes(gI, {nodeId: float(emb[j])}, "f" + str(j))
+        nx.set_node_attributes(gI, {nodeId: float(emb)}, "feature")
     # node relabel - graph에서 노드 id 0부터 시작하도록 ---
     dictIdx = {nodeId: idx for idx, nodeId in enumerate(nodesList)}
     gI = nx.relabel_nodes(gI, dictIdx)
