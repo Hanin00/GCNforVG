@@ -92,87 +92,87 @@ def extractNoun(noun, synsDict, synNameCnter):
 
     return name
 
-
-imgCnt = 100000
-start = time.time()
-with open('./data/scene_graphs.json') as file:  # open json file
-    data = json.load(file)
-end = time.time()
-
-print(end-start)
-
-
-# --------------------------- vvv synset Dict, Total Embedding(fasttext 값) vvv ---------------------------
-'''synset Name Dict'''
-
-synsetList = []
-originIdList = []
-nonSysnNameList = []
-nonSysnIdList = []
-originDict = {}
-
-for ImgId in tqdm(range(imgCnt)):
-    imageDescriptions = data[ImgId]["objects"]
-    for j in range(len(imageDescriptions)):  # 이미지의 object 개수만큼 반복
-        oId = imageDescriptions[j]['object_id']
-        try:
-            synsetName = imageDescriptions[j]['synsets'][0].split(".")
-            synsetList.append(synsetName[0])
-            originIdList.append(str(oId))
-            originDict[str(oId)] = imageDescriptions[j]['names'][0]
-
-        except Exception:
-            nonSysnNameList.append(imageDescriptions[j]['names'][0])
-            nonSysnIdList.append(str(oId))
-
-synNameCnter = Counter(synsetList)
-
-
-'''
-    Synset Naming
-    1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우, objId로 synsDict에서 synsetName을 찾음
-    2. nonSynsetName/Id에서 해당 원소를 제외하고, synsDict에 추가함(objId : objName(synset))
-
-    없는 경우, 2로 넘어감
-'''
-
-
-synsDict = {idx: name for idx, name in zip(originIdList, synsetList)}
-nonSynsDict = {name: value for name, value in zip(nonSysnIdList, nonSysnNameList)}
-
-
-for i in tqdm(range(len(nonSysnIdList))):
-    try:
-        sameNameId = get_key(originDict, nonSysnNameList[i])  # 1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우,
-        synsDict[str(nonSysnIdList[i])] = synsDict[str(sameNameId)]
-
-    except:
-        # 2. noun이 아닐 때 NLTK를 통해서 명사를 찾아 name으로 사용 가능한(synset으로 대체 가능한) noun 추출
-        name = extractNoun(nonSysnNameList[i], synsDict, synNameCnter)
-        synsDict[str(nonSysnIdList[i])] = name
-
-
-with open("./data/synsetDictV3_x100.pickle", "wb") as fw:
-    pickle.dump(synsDict, fw)
+#
+# imgCnt = 100000
+# start = time.time()
+# with open('./data/scene_graphs.json') as file:  # open json file
+#     data = json.load(file)
+# end = time.time()
+#
+# print(end-start)
+#
+#
+# # --------------------------- vvv synset Dict, Total Embedding(fasttext 값) vvv ---------------------------
+# '''synset Name Dict'''
+#
+# synsetList = []
+# originIdList = []
+# nonSysnNameList = []
+# nonSysnIdList = []
+# originDict = {}
+#
+# for ImgId in tqdm(range(imgCnt)):
+#     imageDescriptions = data[ImgId]["objects"]
+#     for j in range(len(imageDescriptions)):  # 이미지의 object 개수만큼 반복
+#         oId = imageDescriptions[j]['object_id']
+#         try:
+#             synsetName = imageDescriptions[j]['synsets'][0].split(".")
+#             synsetList.append(synsetName[0])
+#             originIdList.append(str(oId))
+#             originDict[str(oId)] = imageDescriptions[j]['names'][0]
+#
+#         except Exception:
+#             nonSysnNameList.append(imageDescriptions[j]['names'][0])
+#             nonSysnIdList.append(str(oId))
+#
+# synNameCnter = Counter(synsetList)
+#
+#
+# '''
+#     Synset Naming
+#     1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우, objId로 synsDict에서 synsetName을 찾음
+#     2. nonSynsetName/Id에서 해당 원소를 제외하고, synsDict에 추가함(objId : objName(synset))
+#
+#     없는 경우, 2로 넘어감
+# '''
+#
+#
+# synsDict = {idx: name for idx, name in zip(originIdList, synsetList)}
+# nonSynsDict = {name: value for name, value in zip(nonSysnIdList, nonSysnNameList)}
+#
+#
+# for i in tqdm(range(len(nonSysnIdList))):
+#     try:
+#         sameNameId = get_key(originDict, nonSysnNameList[i])  # 1. originDict{synset을 갖는 objId : objName}에서 nonSynsetName의 원소가 있는 경우,
+#         synsDict[str(nonSysnIdList[i])] = synsDict[str(sameNameId)]
+#
+#     except:
+#         # 2. noun이 아닐 때 NLTK를 통해서 명사를 찾아 name으로 사용 가능한(synset으로 대체 가능한) noun 추출
+#         name = extractNoun(nonSysnNameList[i], synsDict, synNameCnter)
+#         synsDict[str(nonSysnIdList[i])] = name
 
 
-# #위에서 만든 synset Dict를 이용해 totalEmbedding 값을 만듦(fasttext)
+# with open("./data/synsetDictV3_x100.pickle", "wb") as fw:
+#     pickle.dump(synsDict, fw)
+with open("./data/v3_x100/synsetDictV3_x100.pickle", "rb") as fr:
+    synsDict = pickle.load(fr)
+
+# # #위에서 만든 synset Dict를 이용해 totalEmbedding 값을 만듦(fasttext)
 objectNameList = list(set(list(synsDict.values())))
-model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
+# model, totalEmbDict = ut.FeatEmbeddPerTotal_model(objectNameList)
 
 
-with open("./data/totalEmbDictV3_x100.pickle", "wb") as fw:
-    pickle.dump(totalEmbDict, fw)
-
-# with open("data/totalEmbDict.pickle", "rb") as fr:
-#     model = pickle.load(fr)
+# with open("./data/totalEmbDictV3_x100.pickle", "wb") as fw:
+#     pickle.dump(totalEmbDict, fw)
+with open("./data/v3_x100/totalEmbDictV3_x100.pickle", "rb") as fr:
+    totalEmbDict = pickle.load(fr)
 
 # --------------------------- ^^^ synset Dict, Total Embedding(fasttext 값)^^^ ---------------------------
 with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
 lista = list(range(100000))
-for i in range(10) :
+for i in tqdm(range(10)) :
     names = []
     start = i
     if i !=0:
@@ -182,8 +182,8 @@ for i in range(10) :
 
     gList = []
     for j in lista[start:end] :
-        objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, i)
-        objIdSet, objNameList = ut.AllNodes(data, i)
+        objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, j)
+        objIdSet, objNameList = ut.AllNodes(data,j)
 
         # 이름이 중복되면 value 값 갱신됨
         # 이름 하나에 하나의 i 값만 갖는 dict
@@ -213,9 +213,9 @@ for i in range(10) :
 
         # 자기 자신에 참조하는 node가 있는 Idx List 생성
         recurRowId = []
-        for j in range(len(objId)):
-            if objId[j] == subjId[j]:
-                recurRowId.append(j)
+        for idx in range(len(objId)):
+            if objId[idx] == subjId[idx]:
+                recurRowId.append(idx)
 
         df_edge = pd.DataFrame(
             {"objId": objId, "subjId": subjId, "newObjName": newObjName, "newSubjName": newSubjName, })
@@ -351,10 +351,11 @@ for i in range(10) :
         gI = nx.relabel_nodes(gI, dictIdx)
         gList.append(gI)
     path = "./data/v3_x100/v3_x100" + str(i) + ".pickle"
+
     with open(path, "wb") as fw:
         pickle.dump(gList, fw)
 
-with open("data/v3_x100/v3_x1001.pickle", "rb") as fr:
+with open("data/test/v3_x1001.pickle", "rb") as fr:
     graphs= pickle.load(fr)
 
 
