@@ -172,9 +172,9 @@ with open('./data/scene_graphs.json') as file:  # open json file
     data = json.load(file)
 
 lista = list(range(100000))
-for i in tqdm(range(10)) :
+for i in tqdm(range(10)):
     names = []
-    start = i
+    start = i*10000
     if i !=0:
         start = i*10000
     end = (i+1)*10000
@@ -183,7 +183,7 @@ for i in tqdm(range(10)) :
     gList = []
     for j in lista[start:end] :
         objId, subjId, relatiohship, edgeId, weight = ut.AllEdges(data, j)
-        objIdSet, objNameList = ut.AllNodes(data,j)
+        objIdSet, objNameList = ut.AllNodes(data, j)
 
         # 이름이 중복되면 value 값 갱신됨
         # 이름 하나에 하나의 i 값만 갖는 dict
@@ -355,7 +355,7 @@ for i in tqdm(range(10)) :
     with open(path, "wb") as fw:
         pickle.dump(gList, fw)
 
-with open("data/test/v3_x1001.pickle", "rb") as fr:
+with open("data/test/v3_x1000.pickle", "rb") as fr:
     graphs= pickle.load(fr)
 
 

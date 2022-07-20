@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 '''
 
-with open("data/networkx_ver2.pickle", "rb") as fr:
+with open("data/v3_x1000.pickle", "rb") as fr:
     data = pickle.load(fr)
 
 print(len(data[0].nodes()))
@@ -36,19 +36,14 @@ def mkCnt(imgCnt,data) :
         nodeNameList += [node[1] for node in nodeList]
         if nodeNameList.count('man')!= 0 :
             cnt += nodeNameList.count('man')
-
-
-
-
-
     print('cnt : ',cnt)
     synsetCnt = Counter(nodeNameList)
     return synsetCnt
 
 
 synsetCnt = mkCnt(imgCnt, data)
-print(type(synsetCnt))
-print(synsetCnt['man'])
+print(s)
+
 #lista = list(synsetCnt.most_common())
 
 
