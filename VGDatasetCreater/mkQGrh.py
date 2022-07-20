@@ -58,7 +58,6 @@ def get_key(dict, val):
 #
 # sys.exit()
 
-
 # # 단어에 따른 graph 번호
 # def mkCnt(imgCnt,data, name) :
 #     nodeNameList = []
@@ -71,13 +70,11 @@ def get_key(dict, val):
 # with open("data/v3_x100/v3_x1000.pickle", "rb") as fr:
 #     v3X1000 = pickle.load(fr)
 #
-#
 # name = 'hand_blower'
 # gId = mkCnt(len(v3X1000), v3X1000, name)
 # graphShowName(v3X1000[gId])
 #
 # sys.exit()
-
 
 
 with open("data/v3_x100/v3_x1000.pickle", "rb") as fr:
@@ -87,90 +84,58 @@ with open("data/v3_x100/totalEmbDictV3_x100.pickle", "rb") as fr:
     embDict= pickle.load(fr)
 
 
+
 nodeNameList = [
-                [['man','man',],
-                  ['jacket','shoe',]] ,
+                [['table','table','table','table'],
+                  ['vase','flower','chair','cup']] ,
 
-                [['man', 'man', ],
-                 ['trouser', 'shoe', ]],
+                [['table','vase','table','table','table'],
+                  ['vase','flower','flower','fabric','cup']] ,
 
-                [['man', 'man', ],
-                 ['jacket', 'trouser', ]],
-                ]
+                [['car','car','car','car','window'],
+                  ['light','wheel','window','tire','building']],
 
-#
-# nodeNameList = [
-#                 [['dishwasher','cabinet','plate','cabinet'],
-#                   ['glass','plate','shelf','jacket']] ,
-#
-#                 [['man','man','man','man'],
-#                   ['shoe','shirt','jacket','chin']] ,
-#
-#
-#                 [['street','street','street','street'],
-#                   ['tree','sidewalk','car','light']],
-#
-#                  [['street', 'street', 'street', 'street'],
-#                   ['shade', 'tree', 'sidewalk', 'car',]],
-#
-#                  [['road', 'road', 'road', 'road'],
-#                   ['car', 'sign', 'crossing', 'tree', ]],
-#
-#
-#                  [['sofa', 'sofa', 'sofa', 'sofa','teddy'],
-#                   ['frame', 'pillow', 'teddy', 'lamp','pillow' ]],
-#
-#                  [['sofa', 'lamp', 'floor', 'teddy'],
-#                   ['lamp', 'floor', 'rug', 'sofa', ]],
-#
-#
-#
-#                  [['counter', 'counter', 'counter', 'counter'],
-#                   ['apple', 'glass', 'bowl', 'liquid',]],
-#
-#                 [['counter', 'counter', 'counter', 'counter'],
-#                     ['leg', 'pan', 'bag', 'container', ]],
-#
-#
-#
-#                 [['desk', 'desk', 'desk', 'desk'],
-#                     ['cable', 'pen', 'telephone', 'earphone', ]],
-#
-#                 [['desk', 'desk', 'desk', 'monitor'],
-#                  ['telephone', 'laptop', 'monitor', 'keyboard', ]],
-#
-#                 [['desk', 'monitor', 'monitor', 'monitor'],
-#                  ['monitor', 'keyboard', 'note', 'earphone', ]],
-#
-#
-#
-#                 [['woman', 'woman', 'woman', 'woman'],
-#                  ['chair', 'sweater', 'earring', 'jean', ]],
-#
-#                 [['woman', 'desk', 'woman', 'desk'],
-#                  ['desk', 'laptop', 'trouser', 'pen', ]],
-#
-#
-#                  [['man', 'man', 'man', 'man'],
-#                   ['trouser', 'monitor', 'sleeve', 'shirt', ]],
-#
-#                  [['man', 'man', 'man', 'man'],
-#                   ['hand', 'chin', 'sleeve', 'book', ]],
-#
-#                 [['paper', 'paper', 'paper', 'shelf'],
-#                  ['bag', 'booklet', 'shelf', 'book', ]],
-#
-#                 [['keyboard', 'hand', 'man', 'keyboard'],
-#                  ['hand', 'man', 'shirt', 'mouse', ]],
-#
-#                 [['shelf', 'shelf', 'book', 'desk'],
-#                  ['tube', 'book', 'desk', 'computer', ]],
-#
-#                 [['wall', 'wall', 'shelf', 'book'],
-#                  ['poster', 'shelf', 'book', 'paper', ]],
-#
-#
-#             ]
+                 [['car', 'car', 'car',  'car'],
+                  ['tire', 'roof', 'pipe' , 'garage']],
+
+                 [[ 'building', 'window', 'sign', 'building',],
+                  ['window', 'sign', 'letter', 'light']],
+
+                 [['display', 'display', 'water', 'animal'],
+                  ['palm', 'water', 'animal', 'fence']],
+
+                 [['animal', 'animal', 'animal', 'fence', 'animal'],
+                  ['platform', 'fence', 'spectator', 'spectator', 'soil' ]],
+
+                 [['table', 'table', 'lamp', 'flower'],
+                  ['flower', 'lamp', 'cabinet', 'vase',]],
+
+                [['street', 'street', 'street', 'car'],
+                    ['line', 'shadow', 'car', 'headlight', ]],
+
+                [['man', 'man', 'car', 'car'],
+                    ['cap', 'car', 'person', 'engine',]],
+
+                [['man', 'man', 'vehicle', 'man', 'man'],
+                 ['vehicle', 'motor', 'motor', 'jean', 'shirt' ]],
+
+                [['ear', 'ear', 'man', 'man', 'car'],
+                 ['man', 'hat', 'hat', 'car', 'engine' ]],
+
+                [['lampshade', 'lamp', 'lamp', 'shadow'],
+                 ['lamp', 'table', 'shadow', 'wall', ]],
+
+                [['wall', 'wall', 'wall', 'painting'],
+                 ['picture', 'painting', 'shadow', 'frame', ]],
+
+                 [['bed', 'bed', 'bed', 'bed'],
+                  ['bench', 'blouse', 'pillow', 'sheet', ]],
+
+                [['bed',  'pillow','table', 'table'],
+                 ['pillow', 'table', 'lamp', 'mirror', ]],
+
+
+            ]
 
 
 
@@ -199,12 +164,12 @@ for i in range(len(nodeNameList)):
     gI = nx.relabel_nodes(gI, dictIdx)
     gList.append(gI)
 
-#
-# with open("./data/query01_0720.pickle", "wb") as fw:
-#     pickle.dump(gList, fw)
-#
-# with open("./data/query01_0720.pickle", "rb") as fr:
-#     gList = pickle.load(fr)
+
+with open("./data/query01_0720_2.pickle", "wb") as fw:
+    pickle.dump(gList, fw)
+
+with open("./data/query01_0720_2.pickle", "rb") as fr:
+    gList = pickle.load(fr)
 
 print(gList[0].nodes(data=True))
 print(gList[1].nodes(data=True))

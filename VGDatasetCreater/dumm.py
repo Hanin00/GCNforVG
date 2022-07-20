@@ -46,26 +46,43 @@ with open("data/v3_x100/totalEmbDictV3_x100.pickle", "rb") as fr:
     embDict= pickle.load(fr)
 
 
-
-
 nodeNameList = [
-                [['jockey','horse','horse'],
-                  ['horse','safety_rail','numeral',]] ,
+                [['man','man','man','man','man',],
+                  ['jacket','shoe','man','man','man',]] ,
 
-                [['tomato_sauce','pizza','pizza',],
-                  ['pizza','cheese','pan']] ,
+                [['man', 'man', 'man','man','man',],
+                 ['trouser', 'shoe','man','man','man', ]],
 
+                [['man', 'man', 'man','man','man',],
+                 ['jacket', 'trouser','man','man','man', ]],
 
-                [['butter_knife','plate','rug'],
-                  ['plate','rug','dish']],
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['jacket', 'shoe', 'man', 'man', 'man', ]],
 
-                 [['bandanna', 'woman', 'table'],
-                  ['woman', 'table', 'person']],
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['trouser', 'shoe', 'man', 'man', 'man', ]],
 
-                 [['hand_blower', 'wall_socket', 'wall',],
-                  ['wall', 'wall', 'cord' ]],
-            ]
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['jacket', 'trouser', 'man', 'man', 'man', ]],
 
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['jacket', 'shoe', 'man', 'man', 'man', ]],
+
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['trouser', 'shoe', 'man', 'man', 'man', ]],
+
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['jacket', 'trouser', 'man', 'man', 'man', ]],
+
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['jacket', 'shoe', 'man', 'man', 'man', ]],
+
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['trouser', 'shoe', 'man', 'man', 'man', ]],
+
+                [['man', 'man', 'man', 'man', 'man', ],
+                 ['jacket', 'trouser', 'man', 'man', 'man', ]],
+                ]
 
 gList = []
 for i in range(len(nodeNameList)):
