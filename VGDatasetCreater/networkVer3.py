@@ -355,12 +355,6 @@ for i in tqdm(range(10)):
     with open(path, "wb") as fw:
         pickle.dump(gList, fw)
 
-with open("data/test/v3_x1000.pickle", "rb") as fr:
-    graphs= pickle.load(fr)
-
-
-print(graphs[0])
-
 
 
 # with open("data/networkx_ver3_x100.pickle", "wb") as fw:  # < node[nId]['attr'] = array(float)

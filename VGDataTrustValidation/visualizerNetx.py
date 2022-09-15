@@ -18,7 +18,7 @@ import numpy
     Img(대상 그래프)에서 Bounding Box를 통해 확인
 '''
 
-with open("./data/networkx_ver1.pickle", "rb") as fr:
+with open("./data/v3_x1000.pickle", "rb") as fr:
     graphs = pickle.load(fr)
 
 
@@ -143,6 +143,33 @@ def patchOnImgLocal(imagepath, objectsList):
     plt.show()
 
 
+def simpleVisualizer(idDict, imgIdList):
+    # [print(idDict[idx]) for idx in imgIdList]
+    fileIdList = []
+    [fileIdList.append(idDict[idx]) for idx in imgIdList]
+
+    for i in fileIdList:
+        print(i)
+        fileName = "common/data/VG_100K/{}.jpg".format(i)
+        print("fileName : ", fileName)
+        ndarray = img.imread(fileName)
+        pp.imshow(ndarray)
+        pp.show()
+
+
+
+with open("common/data/idxIdDict.pickle", "rb") as fr:
+    idDict = pickle.load(fr)
+
+imgIdList = [1, 8315, 6973, 8304, 6326, 7399, 4131, 5390]
+
+simpleVisualizer(idDict, imgIdList)
+
+sys.exit()
+sys.exit()
+
+
+
 
 #data load
 gId = 0
@@ -170,3 +197,4 @@ objectList = makeObjectsInSubG(gId, G)
 imagepath = './data/python.png'
 
 patchOnImgApi(image, objectList, denseNode)
+patchOnImgLocal(imagepath, objectList)

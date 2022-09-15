@@ -31,9 +31,10 @@ import numpy
 with open("data/idxIdDict.pickle", "rb") as fr:
     idDict = pickle.load(fr)
 
-#with open("data/query01_0720_2.pickle", "rb") as fr:
-with open("data/query01_0720.pickle", "rb") as fr:
-    qGraphs = pickle.load(fr)
+# #with open("data/query01_0720_2.pickle", "rb") as fr:
+# with open("data/query01_0720.pickle", "rb") as fr:
+#     qGraphs = pickle.load(fr)
+
 
 def graphShowName(nexG):
     #nx.draw(nexG, with_labels=True)
@@ -47,15 +48,19 @@ def graphShowName(nexG):
     plt.show()
 
 gList = [
-180, 5489, 9127, 4595, 278, 7740, 511, 1993
+895, 9, 6300, 555, 7090, 4506, 78, 8226
+
+
 ]
-qGList = [0, 2, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]
+
+#qGList = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14 ]
+#qGList = [0, 2, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]
+
 
 [print(idDict[idx]) for idx in gList]
-[graphShowName(qGraphs[idx]) for idx in qGList]
+# [graphShowName(qGraphs[idx]) for idx in qGList]
 
 sys.exit()
-
 
 
 # imgIdList = [1, 399, 593, 594,
@@ -66,7 +71,7 @@ sys.exit()
 #              1518, 5630, 7483, 1707]
 # imgIdList = [3516, 168, 1538, 3461,
 #              4584, 5814, 7045, 4309]
-imgIdList = [6283, 8315, 6973, 8304,
-             6326, 7399, 4131, 5390]
-
-[print(idDict[idx]) for idx in imgIdList]
+# imgIdList = [6283, 8315, 6973, 8304,
+#              6326, 7399, 4131, 5390]
+#
+# [print(idDict[idx]) for idx in imgIdList]

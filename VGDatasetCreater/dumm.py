@@ -17,6 +17,37 @@ from nltk.corpus import conll2000
 
 
 
+
+
+
+
+
+
+with open("./data/v3_x100/v3_x1000.pickle", "rb") as fr:
+    graphs= pickle.load(fr)
+
+print(len(graphs))
+print(graphs[0])
+print(graphs[1])
+print(graphs[2])
+print(graphs[3])
+
+with open("./data/v3_x100/v3_x1001.pickle", "rb") as fr:
+    graphs= pickle.load(fr)
+
+print(len(graphs))
+print(graphs[0])
+print(graphs[1])
+print(graphs[2])
+print(graphs[3])
+
+
+
+sys.exit()
+
+
+
+
 def graphShowName(nexG):
     #nx.draw(nexG, with_labels=True)
     relabelDict = {}
@@ -46,42 +77,36 @@ with open("data/v3_x100/totalEmbDictV3_x100.pickle", "rb") as fr:
     embDict= pickle.load(fr)
 
 
+# '''synset counter_top common value 1000'''
+# with open("data/v3_x100/synsetDictV3_x100.pickle", "rb") as fr:
+#     synDict= pickle.load(fr)
+#
+# pd.set_option('display.max_rows', None)
+# pd.set_option('display.max_columns', None)
+#
+#
+# synCnt = Counter(synDict.values())
+# vals = [i[0] for i in synCnt.most_common()]
+# valcnt = [i[1] for i in synCnt.most_common()]
+# df = pd.DataFrame(vals, valcnt)
+# print(df.head(1000))
+#
+#
+# sys.exit()
+
+
+
 nodeNameList = [
-                [['man','man','man','man','man',],
-                  ['jacket','shoe','man','man','man',]] ,
 
-                [['man', 'man', 'man','man','man',],
-                 ['trouser', 'shoe','man','man','man', ]],
+                [['road', 'traffic_light', 'car','vehicle'],
+                 ['traffic_light', 'car','road','road']],
 
-                [['man', 'man', 'man','man','man',],
-                 ['jacket', 'trouser','man','man','man', ]],
+                [['traffic_light', 'road','car','car',],
+                 ['fence', 'fence','road','fence', ]],
 
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['jacket', 'shoe', 'man', 'man', 'man', ]],
+                [['headlight', 'road', 'road', 'sign' ],
+                 ['car', 'car', 'boundary_line', 'road']],
 
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['trouser', 'shoe', 'man', 'man', 'man', ]],
-
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['jacket', 'trouser', 'man', 'man', 'man', ]],
-
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['jacket', 'shoe', 'man', 'man', 'man', ]],
-
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['trouser', 'shoe', 'man', 'man', 'man', ]],
-
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['jacket', 'trouser', 'man', 'man', 'man', ]],
-
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['jacket', 'shoe', 'man', 'man', 'man', ]],
-
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['trouser', 'shoe', 'man', 'man', 'man', ]],
-
-                [['man', 'man', 'man', 'man', 'man', ],
-                 ['jacket', 'trouser', 'man', 'man', 'man', ]],
                 ]
 
 gList = []
@@ -109,17 +134,21 @@ for i in range(len(nodeNameList)):
     gList.append(gI)
 
 
-with open("./data/query01_0720_trash.pickle", "wb") as fw:
+with open("./data/query_road_0819.pickle", "wb") as fw:
     pickle.dump(gList, fw)
 
-with open("./data/query01_0720_trash.pickle", "rb") as fr:
+with open("./data/query_road_0819.pickle", "rb") as fr:
     gList = pickle.load(fr)
+
 
 print(gList[0].nodes(data=True))
 print(gList[1].nodes(data=True))
 print(gList[2].nodes(data=True))
-print(gList[3].nodes(data=True))
-print(gList[4].nodes(data=True))
+
+
 
 [graphShowName(graph) for graph in gList]
+
+
+
 #graphShowName(gList[2])

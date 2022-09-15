@@ -83,21 +83,6 @@ sys.exit()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 print(data[471])
 print(data[471].nodes(data='name'))
 print(data[471].nodes(data='originId'))
