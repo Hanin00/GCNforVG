@@ -1,7 +1,5 @@
-from visual_genome import api as vg
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-from visual_genome import api as vg
 from PIL import Image as PIL_Image
 import networkx as nx
 import requests
